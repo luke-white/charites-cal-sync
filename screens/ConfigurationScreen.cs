@@ -113,10 +113,10 @@ namespace itdevgeek_charites.screens
                 Charites._calendarId = AppConfiguration.Default.calendar_id;
                 Charites._calendarYear = dpUpdateYear.Value;
 
-                Charites._runInBackground = true;
+                Charites._runInBackground = cbAutoUpdateCalendars.Checked;
                 Charites._runInMinutes = AppConfiguration.Default.background_minutes;
 
-                Charites._updatedSettings = true;
+                Charites.updatedSettings();
 
                 Charites.updateProgramStatus("Updated program settings with new values.");
 

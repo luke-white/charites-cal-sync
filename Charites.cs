@@ -1,4 +1,5 @@
-﻿using itdevgeek_charites.datatypes;
+﻿using CrystalJobScheduler;
+using itdevgeek_charites.datatypes;
 using itdevgeek_charites.helper.sql;
 using itdevgeek_charites.screens;
 using System;
@@ -19,8 +20,6 @@ namespace itdevgeek_charites
         public static string _calendarId { get; set; }
         public static DateTime _calendarYear { get; set; }
 
-        public static bool _updatedSettings { get; set; }
-
         public static List<GCalEventItem> _updatedEvents;
         public static List<GCalEventItem> _deletedEvents;
         public static List<GCalEventItem> _newEvents;
@@ -28,6 +27,8 @@ namespace itdevgeek_charites
         // Create an instance of the splashscreen 
         public static SplashScreen splashScreen;
         public static MainScreen mainForm;
+
+        public static JobScheduler backgroundUpdateScheduler;
 
         /// <summary>
         /// The main entry point for the application.
@@ -40,8 +41,14 @@ namespace itdevgeek_charites
             Application.SetCompatibleTextRenderingDefault(false);
 
             getAppSettingValues();
-
-            _updatedSettings = false;
+            if (_runInBackground)
+            {
+                setUpBackgroundJob();
+                if (backgroundUpdateScheduler != null)
+                {
+                    backgroundUpdateScheduler.Start();
+                }
+            }
 
             // Initialize and show splashscreen. Say the welcome message. 
             splashScreen = new SplashScreen();
@@ -102,14 +109,15 @@ namespace itdevgeek_charites
             if (AppConfiguration.Default.run_in_background)
             {
                 _runInBackground = true;
-                _runInMinutes = AppConfiguration.Default.background_minutes;
-                if (_runInMinutes != 60 || _runInMinutes != 120 || _runInMinutes != 240 || _runInMinutes != 480)
-                {
-                    // default to every 8 hours
-                    _runInMinutes = 480;
-                    AppConfiguration.Default.background_minutes = _runInMinutes;
-                    AppConfiguration.Default.Save();
-                }
+            }
+
+            _runInMinutes = AppConfiguration.Default.background_minutes;
+            if (_runInMinutes != 60 && _runInMinutes != 120 && _runInMinutes != 240 && _runInMinutes != 480)
+            {
+                // default to every 8 hours
+                _runInMinutes = 480;
+                AppConfiguration.Default.background_minutes = _runInMinutes;
+                AppConfiguration.Default.Save();
             }
 
             if (!String.IsNullOrEmpty(AppConfiguration.Default.email_address.Trim()))
@@ -243,5 +251,53 @@ namespace itdevgeek_charites
                 return true;
             }
         }
+
+        private static void setUpBackgroundJob()
+        {
+            if (backgroundUpdateScheduler != null)
+            {
+                backgroundUpdateScheduler.Stop();
+                backgroundUpdateScheduler = null;
+            }
+            if (_runInMinutes > 0)
+            {
+                backgroundUpdateScheduler = new JobScheduler(TimeSpan.FromMinutes(5), () =>
+                {
+                    updateGoogleCalendar();
+                });
+            }
+        }
+
+        public static void updatedSettings()
+        {
+            if (!_runInBackground)
+            {
+                if (backgroundUpdateScheduler != null)
+                {
+                    backgroundUpdateScheduler.Stop();
+                    backgroundUpdateScheduler = null;
+                }
+            }
+            else
+            {
+                setUpBackgroundJob();
+                if (backgroundUpdateScheduler != null)
+                {
+                    backgroundUpdateScheduler.Start();
+                }
+            }
+        }
+
+        //public static 
+        //// For each 1 hour execute 
+        //JobScheduler jobScheduler = new JobScheduler(TimeSpan.FromHours(1), () =>
+        //{
+        //    // Your Action goes here 
+        //    Console.WriteLine("Hello!");
+        //});
+
+        //jobScheduler.Start(); // To Start The Scheduler 
+
+        //jobScheduler.Stop(); // To Stop The Scheduler
     }
 }
