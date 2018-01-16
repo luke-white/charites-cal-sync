@@ -46,6 +46,7 @@
             this.rdoTwoHours = new System.Windows.Forms.RadioButton();
             this.rdoOneHour = new System.Windows.Forms.RadioButton();
             this.lblScheduleTime = new System.Windows.Forms.Label();
+            this.btnResetCalendar = new System.Windows.Forms.Button();
             this.grpRunInBackground.SuspendLayout();
             this.pnlUpdateMinuteSection.SuspendLayout();
             this.SuspendLayout();
@@ -220,11 +221,27 @@
             this.lblScheduleTime.TabIndex = 21;
             this.lblScheduleTime.Text = "Update Schedule:";
             // 
+            // btnResetCalendar
+            // 
+            this.btnResetCalendar.BackColor = System.Drawing.Color.Red;
+            this.btnResetCalendar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnResetCalendar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnResetCalendar.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.btnResetCalendar.Location = new System.Drawing.Point(13, 326);
+            this.btnResetCalendar.Name = "btnResetCalendar";
+            this.btnResetCalendar.Size = new System.Drawing.Size(120, 23);
+            this.btnResetCalendar.TabIndex = 22;
+            this.btnResetCalendar.TabStop = false;
+            this.btnResetCalendar.Text = "Reset Calendar";
+            this.btnResetCalendar.UseVisualStyleBackColor = false;
+            this.btnResetCalendar.Click += new System.EventHandler(this.btnResetCalendar_Click);
+            // 
             // ConfigurationScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 361);
+            this.Controls.Add(this.btnResetCalendar);
             this.Controls.Add(this.grpRunInBackground);
             this.Controls.Add(this.lblUpdateYear);
             this.Controls.Add(this.dpUpdateYear);
@@ -267,5 +284,6 @@
         private System.Windows.Forms.RadioButton rdoTwoHours;
         private System.Windows.Forms.RadioButton rdoOneHour;
         private System.Windows.Forms.Label lblScheduleTime;
+        private System.Windows.Forms.Button btnResetCalendar;
     }
 }

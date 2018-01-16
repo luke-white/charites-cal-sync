@@ -39,19 +39,7 @@ namespace itdevgeek_charites
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            _runInBackground = false;
-            if (AppConfiguration.Default.run_in_background)
-            {
-                _runInBackground = true;
-                _runInMinutes = AppConfiguration.Default.background_minutes;
-                if (_runInMinutes != 60 || _runInMinutes != 120 || _runInMinutes != 240 || _runInMinutes != 480)
-                {
-                    // default to every 8 hours
-                    _runInMinutes = 480;
-                    AppConfiguration.Default.background_minutes = _runInMinutes;
-                    AppConfiguration.Default.Save();
-                }
-            }
+            getAppSettingValues();
 
             _updatedSettings = false;
 
@@ -108,6 +96,34 @@ namespace itdevgeek_charites
             }
         }
 
+        private static void getAppSettingValues()
+        {
+            _runInBackground = false;
+            if (AppConfiguration.Default.run_in_background)
+            {
+                _runInBackground = true;
+                _runInMinutes = AppConfiguration.Default.background_minutes;
+                if (_runInMinutes != 60 || _runInMinutes != 120 || _runInMinutes != 240 || _runInMinutes != 480)
+                {
+                    // default to every 8 hours
+                    _runInMinutes = 480;
+                    AppConfiguration.Default.background_minutes = _runInMinutes;
+                    AppConfiguration.Default.Save();
+                }
+            }
+
+            if (!String.IsNullOrEmpty(AppConfiguration.Default.email_address.Trim()))
+            {
+                _calendarOwner = AppConfiguration.Default.email_address.Trim();
+            }
+
+            if (!String.IsNullOrEmpty(AppConfiguration.Default.calendar_id.Trim()))
+            {
+                _calendarId = AppConfiguration.Default.calendar_id.Trim();
+            }
+
+            _calendarYear = DateTime.Now;
+        }
 
         public static void updateGoogleCalendar()
         {
@@ -120,7 +136,10 @@ namespace itdevgeek_charites
                 mainForm.notifyIcon.ShowBalloonTip(5000);
 
                 // Get Google Calendar Events
-                GCalHelper.getYearlyEvents(_calendarOwner, _calendarId, _calendarYear, null);
+                if (GCalHelper.googleCalEvents == null)
+                {
+                    GCalHelper.getYearlyEvents(_calendarOwner, _calendarId, _calendarYear, null);
+                }
                 List<GCalEventItem> currentGoogEvents = GCalHelper.googleCalEvents;
 
                 // Load Values From Salon Calendar
@@ -150,8 +169,9 @@ namespace itdevgeek_charites
                 // get Events that need to update
                 if (currentGoogEvents != null && currentGoogEvents.Count > 0)
                 {
-                    _updatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(_newEvents).ToList();
-                    foreach (GCalEventItem e in _updatedEvents)
+                    List<GCalEventItem> potentialUpdatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(_newEvents).ToList();
+                    //_updatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(_newEvents).ToList();
+                    foreach (GCalEventItem e in potentialUpdatedEvents)
                     {
                         GCalEventItem ge = currentGoogEvents.Find(x => x.salonCalendarId == e.salonCalendarId);
                         if (ge != null)
@@ -159,6 +179,37 @@ namespace itdevgeek_charites
                             e.eventId = ge.eventId;
                         }
                     }
+                    List<GCalEventItem> noGoogleIdEvents = potentialUpdatedEvents.FindAll(x => x.eventId == null).ToList();
+                    if (noGoogleIdEvents != null && noGoogleIdEvents.Count > 0)
+                    {
+                        _newEvents = (List<GCalEventItem>)_newEvents.Concat(noGoogleIdEvents.Except(_newEvents)).ToList();
+                        potentialUpdatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(noGoogleIdEvents).ToList();
+                    }
+
+                    List<GCalEventItem> unchangedEvents = new List<GCalEventItem>();
+                    foreach (var ev in potentialUpdatedEvents)
+                    {
+                        var entryToCheck = currentGoogEvents.FirstOrDefault(x => x.salonCalendarId == ev.salonCalendarId);
+                        if (entryToCheck != null)
+                        {
+                            if (entryToCheck.appointmentType != ev.appointmentType ||
+                                entryToCheck.client != ev.client ||
+                                entryToCheck.staffMember != ev.staffMember ||
+                                entryToCheck.startTime != ev.startTime ||
+                                entryToCheck.endTime != ev.endTime ||
+                                entryToCheck.durationMinutes != ev.durationMinutes)
+                            {
+                                // need to update so leave in list
+                                log.Debug("Need to update event ->" + entryToCheck.salonCalendarId);
+                            }
+                            else
+                            {
+                                unchangedEvents.Add(entryToCheck);
+                            }
+                        }
+                    }
+                    
+                    _updatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(unchangedEvents).ToList();
                 }
                 else
                 {

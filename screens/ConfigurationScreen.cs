@@ -193,5 +193,23 @@ namespace itdevgeek_charites.screens
                 }
             );
         }
+
+        private void btnResetCalendar_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrEmpty(txtCalendarOwner.Text.Trim()) || String.IsNullOrEmpty((cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString()))
+            {
+                MessageBox.Show("Cannot Reset Calendar as Owner and Calendar have not been selected.");
+            }
+            else
+            {
+                DialogResult answer = MessageBox.Show("Are you sure you wish to clear all events from the Calendar?", "caption", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+                if (answer == DialogResult.Yes)
+                {
+                    GCalHelper.clearAllEventsFromCalendar(txtCalendarOwner.Text.Trim(), (cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString(), null);
+                    GCalHelper.googleCalEvents = null;
+                }
+            }
+            
+        }
     }
 }

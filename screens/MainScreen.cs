@@ -26,7 +26,6 @@ namespace itdevgeek_charites
 
         void bgSynchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //loadingScreen.Close();
             btnSettings.Enabled = true;
             btnUpdate.Enabled = true;
             btnExit.Enabled = true;
@@ -41,19 +40,6 @@ namespace itdevgeek_charites
         {
             if (Charites.haveRequiredData())
             {
-                //if (loadingScreen == null || loadingScreen.IsDisposed)
-                //{
-                //    loadingScreen = new ProcessingScreen();
-                //}
-
-                //loadingScreen.TopMost = true;
-                //loadingScreen.StartPosition = FormStartPosition.CenterScreen;
-                //loadingScreen.Show();
-                //loadingScreen.Refresh();
-
-                // force the wait window to display for at least 700ms so it doesn't just flash on the screen
-                //System.Threading.Thread.Sleep(700);
-
                 btnSettings.Enabled = false;
                 btnUpdate.Enabled = false;
                 btnExit.Enabled = false;

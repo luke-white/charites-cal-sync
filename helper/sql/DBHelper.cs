@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Configuration;
 
 namespace itdevgeek_charites.helper.sql
 {
@@ -102,8 +101,12 @@ namespace itdevgeek_charites.helper.sql
                     }
                     newEvent.client = clientName;
 
-                    string employee = appointmentQuery.Select(x => x.Employee).First().ToLower().Trim();
-                    switch (employee)
+                    string employee = appointmentQuery.Select(x => x.Employee).FirstOrDefault().ToLower().Trim();
+                    if (String.IsNullOrEmpty(employee))
+                    {
+                        employee = ((NaNStaff.Employees) 0).ToString().ToLower();
+                    }
+                    switch (employee.ToLower())
                     {
                         case "lyshaie white":
                             newEvent.staffMember = NaNStaff.Employees.LYSHAIE;
