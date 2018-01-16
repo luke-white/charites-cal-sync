@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Salon_Calendar_Integration.screens
+namespace itdevgeek_charites.screens
 {
     public partial class SplashScreen : Form
     {

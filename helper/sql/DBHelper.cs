@@ -1,4 +1,4 @@
-﻿using Salon_Calendar_Integration.datatypes;
+﻿using itdevgeek_charites.datatypes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Configuration;
 
-namespace Salon_Calendar_Integration.helper.sql
+namespace itdevgeek_charites.helper.sql
 {
     class DBHelper
     {

@@ -1,4 +1,4 @@
-﻿namespace Salon_Calendar_Integration
+﻿namespace itdevgeek_charites
 {
     partial class MainScreen
     {
@@ -28,151 +28,139 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainScreen));
-            this.lblCalendarOwner = new System.Windows.Forms.Label();
-            this.tbCalendarOwner = new System.Windows.Forms.TextBox();
-            this.btnExit = new System.Windows.Forms.Button();
-            this.btnSaveSettings = new System.Windows.Forms.Button();
+            this.btnExit = new FontAwesome.Sharp.IconButton();
             this.btnUpdate = new System.Windows.Forms.Button();
-            this.lblCalendarToUpdate = new System.Windows.Forms.Label();
-            this.cbCalendarToUpdate = new System.Windows.Forms.ComboBox();
-            this.btnLoadCalendars = new System.Windows.Forms.Button();
-            this.dpUpdateYear = new System.Windows.Forms.DateTimePicker();
-            this.lblUpdateYear = new System.Windows.Forms.Label();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.statusBar = new System.Windows.Forms.StatusBar();
+            this.sbpanelAppStatus = new System.Windows.Forms.StatusBarPanel();
+            this.sbpanelDateTime = new System.Windows.Forms.StatusBarPanel();
+            this.btnSettings = new FontAwesome.Sharp.IconButton();
+            this.rtxtAppInfo = new System.Windows.Forms.RichTextBox();
+            ((System.ComponentModel.ISupportInitialize)(this.sbpanelAppStatus)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sbpanelDateTime)).BeginInit();
             this.SuspendLayout();
-            // 
-            // lblCalendarOwner
-            // 
-            this.lblCalendarOwner.AutoSize = true;
-            this.lblCalendarOwner.Location = new System.Drawing.Point(42, 87);
-            this.lblCalendarOwner.Name = "lblCalendarOwner";
-            this.lblCalendarOwner.Size = new System.Drawing.Size(114, 13);
-            this.lblCalendarOwner.TabIndex = 0;
-            this.lblCalendarOwner.Text = "Calendar Owner Email:";
-            // 
-            // tbCalendarOwner
-            // 
-            this.tbCalendarOwner.Location = new System.Drawing.Point(162, 84);
-            this.tbCalendarOwner.Name = "tbCalendarOwner";
-            this.tbCalendarOwner.Size = new System.Drawing.Size(235, 20);
-            this.tbCalendarOwner.TabIndex = 1;
             // 
             // btnExit
             // 
-            this.btnExit.Location = new System.Drawing.Point(478, 301);
+            this.btnExit.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.btnExit.IconChar = FontAwesome.Sharp.IconChar.SignOut;
+            this.btnExit.IconColor = System.Drawing.Color.Black;
+            this.btnExit.IconSize = 25;
+            this.btnExit.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnExit.Location = new System.Drawing.Point(492, 224);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(75, 23);
-            this.btnExit.TabIndex = 2;
+            this.btnExit.Rotation = 0D;
+            this.btnExit.Size = new System.Drawing.Size(80, 50);
+            this.btnExit.TabIndex = 3;
             this.btnExit.Text = "E&xit";
+            this.btnExit.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
-            // 
-            // btnSaveSettings
-            // 
-            this.btnSaveSettings.Location = new System.Drawing.Point(380, 301);
-            this.btnSaveSettings.Name = "btnSaveSettings";
-            this.btnSaveSettings.Size = new System.Drawing.Size(92, 23);
-            this.btnSaveSettings.TabIndex = 3;
-            this.btnSaveSettings.Text = "&Save Settings";
-            this.btnSaveSettings.UseVisualStyleBackColor = true;
-            this.btnSaveSettings.Click += new System.EventHandler(this.btnSaveSettings_Click);
             // 
             // btnUpdate
             // 
             this.btnUpdate.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnUpdate.Location = new System.Drawing.Point(191, 218);
+            this.btnUpdate.Location = new System.Drawing.Point(158, 280);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(182, 54);
-            this.btnUpdate.TabIndex = 4;
-            this.btnUpdate.Text = "Update Salon Calendar";
+            this.btnUpdate.TabIndex = 1;
+            this.btnUpdate.Text = "&Update Salon Calendar Now";
             this.btnUpdate.UseVisualStyleBackColor = false;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
-            // lblCalendarToUpdate
+            // notifyIcon
             // 
-            this.lblCalendarToUpdate.AutoSize = true;
-            this.lblCalendarToUpdate.Location = new System.Drawing.Point(42, 125);
-            this.lblCalendarToUpdate.Name = "lblCalendarToUpdate";
-            this.lblCalendarToUpdate.Size = new System.Drawing.Size(102, 13);
-            this.lblCalendarToUpdate.TabIndex = 5;
-            this.lblCalendarToUpdate.Text = "Calendar to Update:";
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "Charites:  Salon Calendar Integration";
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
-            // cbCalendarToUpdate
+            // statusBar
             // 
-            this.cbCalendarToUpdate.FormattingEnabled = true;
-            this.cbCalendarToUpdate.Location = new System.Drawing.Point(162, 122);
-            this.cbCalendarToUpdate.Name = "cbCalendarToUpdate";
-            this.cbCalendarToUpdate.Size = new System.Drawing.Size(235, 21);
-            this.cbCalendarToUpdate.TabIndex = 6;
+            this.statusBar.Location = new System.Drawing.Point(0, 339);
+            this.statusBar.Name = "statusBar";
+            this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
+            this.sbpanelAppStatus,
+            this.sbpanelDateTime});
+            this.statusBar.ShowPanels = true;
+            this.statusBar.Size = new System.Drawing.Size(584, 22);
+            this.statusBar.TabIndex = 10;
             // 
-            // btnLoadCalendars
+            // sbpanelAppStatus
             // 
-            this.btnLoadCalendars.Location = new System.Drawing.Point(416, 120);
-            this.btnLoadCalendars.Name = "btnLoadCalendars";
-            this.btnLoadCalendars.Size = new System.Drawing.Size(106, 23);
-            this.btnLoadCalendars.TabIndex = 7;
-            this.btnLoadCalendars.Text = "Load Calendars";
-            this.btnLoadCalendars.UseVisualStyleBackColor = true;
-            this.btnLoadCalendars.Click += new System.EventHandler(this.btnLoadCalendars_Click);
+            this.sbpanelAppStatus.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
+            this.sbpanelAppStatus.Name = "sbpanelAppStatus";
+            this.sbpanelAppStatus.ToolTipText = "Last Activity";
+            this.sbpanelAppStatus.Width = 557;
             // 
-            // dpUpdateYear
+            // sbpanelDateTime
             // 
-            this.dpUpdateYear.CustomFormat = "yyyy";
-            this.dpUpdateYear.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dpUpdateYear.Location = new System.Drawing.Point(466, 24);
-            this.dpUpdateYear.MinDate = new System.DateTime(2017, 1, 1, 0, 0, 0, 0);
-            this.dpUpdateYear.Name = "dpUpdateYear";
-            this.dpUpdateYear.Size = new System.Drawing.Size(73, 20);
-            this.dpUpdateYear.TabIndex = 8;
-            this.dpUpdateYear.Value = new System.DateTime(2018, 1, 1, 0, 0, 0, 0);
+            this.sbpanelDateTime.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
+            this.sbpanelDateTime.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.Raised;
+            this.sbpanelDateTime.Name = "sbpanelDateTime";
+            this.sbpanelDateTime.Width = 10;
             // 
-            // lblUpdateYear
+            // btnSettings
             // 
-            this.lblUpdateYear.AutoSize = true;
-            this.lblUpdateYear.Location = new System.Drawing.Point(403, 28);
-            this.lblUpdateYear.Name = "lblUpdateYear";
-            this.lblUpdateYear.Size = new System.Drawing.Size(32, 13);
-            this.lblUpdateYear.TabIndex = 9;
-            this.lblUpdateYear.Text = "Year:";
+            this.btnSettings.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.btnSettings.IconChar = FontAwesome.Sharp.IconChar.Cog;
+            this.btnSettings.IconColor = System.Drawing.Color.Black;
+            this.btnSettings.IconSize = 25;
+            this.btnSettings.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnSettings.Location = new System.Drawing.Point(492, 12);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Rotation = 0D;
+            this.btnSettings.Size = new System.Drawing.Size(80, 45);
+            this.btnSettings.TabIndex = 2;
+            this.btnSettings.Text = "&Settings";
+            this.btnSettings.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnSettings.UseVisualStyleBackColor = true;
+            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+            // 
+            // rtxtAppInfo
+            // 
+            this.rtxtAppInfo.BackColor = System.Drawing.SystemColors.Control;
+            this.rtxtAppInfo.Location = new System.Drawing.Point(12, 12);
+            this.rtxtAppInfo.Name = "rtxtAppInfo";
+            this.rtxtAppInfo.ReadOnly = true;
+            this.rtxtAppInfo.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.rtxtAppInfo.Size = new System.Drawing.Size(474, 262);
+            this.rtxtAppInfo.TabIndex = 12;
+            this.rtxtAppInfo.TabStop = false;
+            this.rtxtAppInfo.Text = resources.GetString("rtxtAppInfo.Text");
             // 
             // MainScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(565, 339);
-            this.Controls.Add(this.lblUpdateYear);
-            this.Controls.Add(this.dpUpdateYear);
-            this.Controls.Add(this.btnLoadCalendars);
-            this.Controls.Add(this.cbCalendarToUpdate);
-            this.Controls.Add(this.lblCalendarToUpdate);
+            this.ClientSize = new System.Drawing.Size(584, 361);
+            this.Controls.Add(this.rtxtAppInfo);
+            this.Controls.Add(this.btnSettings);
+            this.Controls.Add(this.statusBar);
             this.Controls.Add(this.btnUpdate);
-            this.Controls.Add(this.btnSaveSettings);
             this.Controls.Add(this.btnExit);
-            this.Controls.Add(this.tbCalendarOwner);
-            this.Controls.Add(this.lblCalendarOwner);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainScreen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Salon Iris Calendar Integration";
+            this.Text = "Charites:  Salon Iris Calendar Integration";
+            ((System.ComponentModel.ISupportInitialize)(this.sbpanelAppStatus)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sbpanelDateTime)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lblCalendarOwner;
-        private System.Windows.Forms.TextBox tbCalendarOwner;
-        private System.Windows.Forms.Button btnExit;
-        private System.Windows.Forms.Button btnSaveSettings;
         private System.Windows.Forms.Button btnUpdate;
-        private System.Windows.Forms.Label lblCalendarToUpdate;
-        private System.Windows.Forms.ComboBox cbCalendarToUpdate;
-        private System.Windows.Forms.Button btnLoadCalendars;
-        private System.Windows.Forms.DateTimePicker dpUpdateYear;
-        private System.Windows.Forms.Label lblUpdateYear;
+        private System.Windows.Forms.StatusBar statusBar;
+        private FontAwesome.Sharp.IconButton btnSettings;
+        private FontAwesome.Sharp.IconButton btnExit;
+        private System.Windows.Forms.RichTextBox rtxtAppInfo;
+        protected System.Windows.Forms.StatusBarPanel sbpanelAppStatus;
+        protected System.Windows.Forms.StatusBarPanel sbpanelDateTime;
+        public System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

@@ -14,5 +14,11 @@
     <Setting Name="dbConnectionString" Type="System.String" Scope="User">
       <Value Profile="(Default)">Data Source=REAPER;Initial Catalog=SalonIris;Integrated Security=SSPI;</Value>
     </Setting>
+    <Setting Name="run_in_background" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="background_minutes" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

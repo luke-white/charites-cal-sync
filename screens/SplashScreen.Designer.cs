@@ -1,4 +1,4 @@
-﻿namespace Salon_Calendar_Integration.screens
+﻿namespace itdevgeek_charites.screens
 {
     partial class SplashScreen
     {

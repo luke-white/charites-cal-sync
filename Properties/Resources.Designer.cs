@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Salon_Calendar_Integration.Properties
+namespace itdevgeek_charites.Properties
 {
 
 

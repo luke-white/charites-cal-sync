@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Salon_Calendar_Integration.datatypes
+namespace itdevgeek_charites.datatypes
 {
     class GCalEventItem
     {

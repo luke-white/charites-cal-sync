@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Salon_Calendar_Integration {
+namespace itdevgeek_charites {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -68,6 +68,30 @@ namespace Salon_Calendar_Integration {
             }
             set {
                 this["dbConnectionString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool run_in_background {
+            get {
+                return ((bool)(this["run_in_background"]));
+            }
+            set {
+                this["run_in_background"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int background_minutes {
+            get {
+                return ((int)(this["background_minutes"]));
+            }
+            set {
+                this["background_minutes"] = value;
             }
         }
     }

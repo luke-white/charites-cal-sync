@@ -2,7 +2,7 @@
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Requests;
 using Google.Apis.Services;
-using Salon_Calendar_Integration.datatypes;
+using itdevgeek_charites.datatypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Google.Apis.Calendar.v3.Data.Event;
 
-namespace Salon_Calendar_Integration
+namespace itdevgeek_charites
 {
     class GCalHelper
     {
