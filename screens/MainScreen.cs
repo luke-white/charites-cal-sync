@@ -1,4 +1,5 @@
-﻿using itdevgeek_charites.screens;
+﻿using itdevgeek_charites.helper.application;
+using itdevgeek_charites.screens;
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -82,6 +83,23 @@ namespace itdevgeek_charites
             this.WindowState = FormWindowState.Normal;
             notifyIcon.Visible = false;
         }
+
+
+        protected override void WndProc(ref Message message)
+        {
+            if (message.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
+            {
+                ShowWindow();
+            }
+            base.WndProc(ref message);
+        }
+
+        public void ShowWindow()
+        {
+            // Insert code here to make your form show itself.
+            WinAPI.ShowToFront(this.Handle);
+        }
+
 
     }
 }

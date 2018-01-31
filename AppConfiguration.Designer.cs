@@ -61,7 +61,7 @@ namespace itdevgeek_charites {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=REAPER;Initial Catalog=SalonIris;Integrated Security=SSPI;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NUTSABOUTNAILS;Initial Catalog=SalonIris;Integrated Security=SSPI;")]
         public string dbConnectionString {
             get {
                 return ((string)(this["dbConnectionString"]));
@@ -85,7 +85,7 @@ namespace itdevgeek_charites {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("480")]
         public int background_minutes {
             get {
                 return ((int)(this["background_minutes"]));

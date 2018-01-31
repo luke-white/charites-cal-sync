@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Salon_Calendar_Integration</RootNamespace>
+    <RootNamespace>itdevgeek_charites</RootNamespace>
     <AssemblyName>Salon Calendar Integration</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -109,6 +109,9 @@
     <Compile Include="datatypes\CalendarListItem.cs" />
     <Compile Include="datatypes\GCalEventItem.cs" />
     <Compile Include="datatypes\NaNStaff.cs" />
+    <Compile Include="helper\application\ProgramInfo.cs" />
+    <Compile Include="helper\application\SingleInstance.cs" />
+    <Compile Include="helper\application\WinAPI.cs" />
     <Compile Include="helper\google\GAuthHelper.cs" />
     <Compile Include="helper\google\GCalHelper.cs" />
     <Compile Include="helper\sql\DBHelper.cs" />
@@ -146,6 +149,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="screens\SplashScreen.resx">
       <DependentUpon>SplashScreen.cs</DependentUpon>

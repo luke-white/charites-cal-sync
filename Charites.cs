@@ -1,10 +1,13 @@
 ﻿using CrystalJobScheduler;
 using itdevgeek_charites.datatypes;
+using itdevgeek_charites.helper.application;
 using itdevgeek_charites.helper.sql;
 using itdevgeek_charites.screens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace itdevgeek_charites
@@ -37,31 +40,47 @@ namespace itdevgeek_charites
         static void Main()
         {
             log.Info("Launching Charites - Salon Calendar Integration Application....");
+
+            if (!SingleInstance.Start())
+            {
+                SingleInstance.ShowFirstInstance();
+                return;
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            getAppSettingValues();
-            if (_runInBackground)
-            {
-                setUpBackgroundJob();
-                if (backgroundUpdateScheduler != null)
+            try
+            { 
+                getAppSettingValues();
+                if (_runInBackground)
                 {
-                    backgroundUpdateScheduler.Start();
+                    setUpBackgroundJob();
+                    if (backgroundUpdateScheduler != null)
+                    {
+                        backgroundUpdateScheduler.Start();
+                    }
                 }
+
+                // Initialize and show splashscreen. Say the welcome message. 
+                splashScreen = new SplashScreen();
+                splashScreen.Show();
+
+                // Create an instance of MainForm and hook into shown and closed events.
+                mainForm = new MainScreen();
+                mainForm.Shown += main_Shown;
+                mainForm.Resize += main_Resize;
+                mainForm.FormClosed += main_FormClosed;
+
+                Thread.Sleep(3000);   // Pause for 3 second.
+                Application.Run(mainForm);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
 
-            // Initialize and show splashscreen. Say the welcome message. 
-            splashScreen = new SplashScreen();
-            splashScreen.Show();
-
-            // Create an instance of MainForm and hook into shown and closed events.
-            mainForm = new MainScreen();
-            mainForm.Shown += main_Shown;
-            mainForm.Resize += main_Resize;
-            mainForm.FormClosed += main_FormClosed;
-
-            System.Threading.Thread.Sleep(3000);   // Pause for 3 second.
-            Application.Run(mainForm);
+            SingleInstance.Stop();
         }
 
         static void main_FormClosed(object sender, FormClosedEventArgs e)
@@ -101,6 +120,22 @@ namespace itdevgeek_charites
                 mainForm.Hide();
                 mainForm.notifyIcon.Visible = true;
             }
+        }
+
+        [DllImportAttribute("user32.dll")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImportAttribute("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImportAttribute("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        public static void ShowToFront(string windowName)
+        {
+            IntPtr firstInstance = FindWindow(null, windowName);
+            ShowWindow(firstInstance, 1);
+            SetForegroundWindow(firstInstance);
         }
 
         private static void getAppSettingValues()
@@ -287,17 +322,5 @@ namespace itdevgeek_charites
                 }
             }
         }
-
-        //public static 
-        //// For each 1 hour execute 
-        //JobScheduler jobScheduler = new JobScheduler(TimeSpan.FromHours(1), () =>
-        //{
-        //    // Your Action goes here 
-        //    Console.WriteLine("Hello!");
-        //});
-
-        //jobScheduler.Start(); // To Start The Scheduler 
-
-        //jobScheduler.Stop(); // To Stop The Scheduler
     }
 }
