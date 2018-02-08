@@ -1,20 +1,34 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charites", "Charites.csproj", "{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CharitesSetup", "..\CharitesSetup\CharitesSetup.vdproj", "{4D1AD4BC-AD1A-4E1F-84AE-41246EE9AE41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Debug|x64.ActiveCfg = Debug|x64
+		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Debug|x64.Build.0 = Debug|x64
 		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Release|x64.ActiveCfg = Release|x64
+		{9CFB5F33-8A5E-4A6F-A402-28DB39CE3803}.Release|x64.Build.0 = Release|x64
+		{4D1AD4BC-AD1A-4E1F-84AE-41246EE9AE41}.Debug|Any CPU.ActiveCfg = Debug
+		{4D1AD4BC-AD1A-4E1F-84AE-41246EE9AE41}.Debug|x64.ActiveCfg = Debug
+		{4D1AD4BC-AD1A-4E1F-84AE-41246EE9AE41}.Debug|x64.Build.0 = Debug
+		{4D1AD4BC-AD1A-4E1F-84AE-41246EE9AE41}.Release|Any CPU.ActiveCfg = Release
+		{4D1AD4BC-AD1A-4E1F-84AE-41246EE9AE41}.Release|x64.ActiveCfg = Release
+		{4D1AD4BC-AD1A-4E1F-84AE-41246EE9AE41}.Release|x64.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

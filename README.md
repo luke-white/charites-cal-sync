@@ -20,6 +20,11 @@ Keep all your local salon appointments for staff updated in a shared Google Cale
 - only run one instance at a time
 
 
+### known issues
+
+- calendar dropdown does not refresh after loading calendars for the dirst time
+- if MS SQL database connection fails, no error is shown to the user when synching
+
 ### author
 
 [Luke White](https://github.com/luke-white)
