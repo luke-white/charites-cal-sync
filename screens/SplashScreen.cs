@@ -1,20 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
+﻿// -----------------------------------------------------
+// <copyright file="WinAPI.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites.screens
 {
+    using System.Windows.Forms;
+
+    /// <summary>
+    /// Spash screen, displayed during app laod and close
+    /// </summary>
     public partial class SplashScreen : Form
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SplashScreen" /> class.
+        /// </summary>
         public SplashScreen()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

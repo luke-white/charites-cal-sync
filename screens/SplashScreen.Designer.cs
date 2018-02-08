@@ -1,4 +1,10 @@
-﻿namespace itdevgeek_charites.screens
+﻿// -----------------------------------------------------
+// <copyright file="SplashScreen.Designer.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
+namespace itdevgeek_charites.screens
 {
     partial class SplashScreen
     {

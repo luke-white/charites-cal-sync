@@ -1,22 +1,40 @@
-﻿using System.IO;
-using System.Threading;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Calendar.v3;
-using Google.Apis.Util.Store;
-
+﻿// -----------------------------------------------------
+// <copyright file="GAuthHelper.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites
 {
-    class GAuthHelper
-    {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    using System.IO;
+    using System.Threading;
+    using Google.Apis.Auth.OAuth2;
+    using Google.Apis.Calendar.v3;
+    using Google.Apis.Util.Store;
 
-        public static string CLIENT_SECRET_FILE = "auth/client_secret.json";
+    /// <summary>
+    /// Google Authorisation Helper
+    /// </summary>
+    public class GAuthHelper
+    {
+        /// <summary>Path and filename used for Google Client API file</summary>
+        private const string CLIENT_SECRET_FILE = "auth/client_secret.json";
+
+        /// <summary>Class Logger</summary>
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/salon-calendar-intg.json
-        static string[] Scopes = { CalendarService.Scope.Calendar };
 
-        public static UserCredential getCredential(string owner)
+        /// <summary>Authorisation scopes needed by the application</summary>
+        private static string[] googleScopes = { CalendarService.Scope.Calendar };
+
+        /// <summary>
+        /// Get the user Google credentials using the browser if not already authorised
+        /// </summary>
+        /// <param name="owner">Calendar owner id to authorise</param>
+        /// <returns>The Google user credential for API calls</returns>
+        public static UserCredential GetCredential(string owner)
         {
             log.Debug("Starting Obtaining Google Credential");
 
@@ -28,8 +46,9 @@ namespace itdevgeek_charites
 
                 credPath = Path.Combine(credPath, ".credentials/salon-calendar-intg.json");
 
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    googleScopes,
                     owner,
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
@@ -40,6 +59,5 @@ namespace itdevgeek_charites
             log.Debug("Finished Obtaining Google Credential");
             return credential;
         }
-
     }
 }

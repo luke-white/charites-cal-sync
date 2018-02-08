@@ -1,28 +1,44 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
+﻿// -----------------------------------------------------
+// <copyright file="ConfigurationScreen.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites.screens
 {
+    using System;
+    using System.Threading.Tasks;
+    using System.Windows.Forms;
+
+    /// <summary>
+    /// Configuration / Options screen
+    /// </summary>
     public partial class ConfigurationScreen : Form
     {
+        /// <summary>Class logger</summary>
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationScreen" /> class.
+        /// </summary>
         public ConfigurationScreen()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             dpUpdateYear.Value = DateTime.Now;
 
             CalendarListItem item = new CalendarListItem();
             item.Text = "Retrieving Calendars... Or None to Display.";
-            item.Value = "";
+            item.Value = string.Empty;
 
             cbCalendarToUpdate.Items.Add(item);
             cbCalendarToUpdate.SelectedItem = item;
         }
 
-        protected void loadValuesFromAppSettings()
+        /// <summary>
+        /// Load the initial settings from the AppConfiguration
+        /// </summary>
+        protected void LoadValuesFromAppSettings()
         {
             txtCalendarOwner.Text = AppConfiguration.Default.email_address.Trim();
 
@@ -51,11 +67,14 @@ namespace itdevgeek_charites.screens
             }
         }
 
-        private void updateCalendarList()
+        /// <summary>
+        /// Update the calendar list dropdown from Google Calendar API
+        /// </summary>
+        private void UpdateCalendarList()
         {
             if (txtCalendarOwner.Text.Trim().Length > 0)
             {
-                CalendarListItem[] calendars = GCalHelper.getCalendars(txtCalendarOwner.Text.Trim());
+                CalendarListItem[] calendars = GCalHelper.GetCalendars(txtCalendarOwner.Text.Trim());
 
                 if (calendars != null && calendars.Length > 0)
                 {
@@ -69,7 +88,12 @@ namespace itdevgeek_charites.screens
             }
         }
 
-        private void btnSaveSettings_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Save Settings button logic to save all options to the AppConfiguration
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void BtnSaveSettings_Click(object sender, EventArgs e)
         {
             AppConfiguration.Default.email_address = txtCalendarOwner.Text.Trim();
 
@@ -105,7 +129,7 @@ namespace itdevgeek_charites.screens
                 }
             }
 
-            if (allSettingsValid())
+            if (this.AllSettingsValid())
             {
                 AppConfiguration.Default.Save();
 
@@ -116,30 +140,32 @@ namespace itdevgeek_charites.screens
                 Charites._runInBackground = cbAutoUpdateCalendars.Checked;
                 Charites._runInMinutes = AppConfiguration.Default.background_minutes;
 
-                Charites.updatedSettings();
+                Charites.UpdatedSettings();
 
-                Charites.updateProgramStatus("Updated program settings with new values.");
+                Charites.UpdateProgramStatus("Updated program settings with new values.");
 
-                Close();
+                this.Close();
             }
             else
             {
                 MessageBox.Show("Please ensure all required settings have been provided.");
             }
-
-            
         }
 
-        private bool allSettingsValid()
+        /// <summary>
+        /// Validate that all settins are entered and valid
+        /// </summary>
+        /// <returns>if all settings are valid</returns>
+        private bool AllSettingsValid()
         {
             bool valid = true;
 
-            if (String.IsNullOrEmpty(txtCalendarOwner.Text.Trim()))
+            if (string.IsNullOrEmpty(txtCalendarOwner.Text.Trim()))
             {
                 return false;
             }
 
-            if (String.IsNullOrEmpty((cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString()))
+            if (string.IsNullOrEmpty((cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString()))
             {
                 return false;
             }
@@ -155,21 +181,34 @@ namespace itdevgeek_charites.screens
             return valid;
         }
 
-        private void btnLoadCalendars_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Load Calendar Button logic, update from google
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void BtnLoadCalendars_Click(object sender, EventArgs e)
         {
-            updateCalendarList();
+            this.UpdateCalendarList();
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Cancel Button, close form without saving settings
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
-            Close();
+            this.Close();
         }
 
-        private void updateCalendarSelectionItems()
+        /// <summary>
+        /// Update the Calendar selection dropdoen items and set default display based on AppConfiguration
+        /// </summary>
+        private void UpdateCalendarSelectionItems()
         {
             if (AppConfiguration.Default.calendar_id.Trim().Length > 0 && AppConfiguration.Default.calendar_name.Trim().Length > 0)
             {
-                updateCalendarList();
+                this.UpdateCalendarList();
                 foreach (CalendarListItem item in cbCalendarToUpdate.Items)
                 {
                     if (item.Value.ToString() == AppConfiguration.Default.calendar_id.Trim())
@@ -181,22 +220,26 @@ namespace itdevgeek_charites.screens
             }
         }
 
+        /// <summary>
+        /// Configuration screen loading operations, update based on current AppConfiguration
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
         private void ConfigurationScreen_Load(object sender, EventArgs e)
         {
-            loadValuesFromAppSettings();
+            this.LoadValuesFromAppSettings();
 
-            Task.Factory.StartNew
-            (
-                () =>
-                {
-                    Invoke(new Action(updateCalendarSelectionItems));
-                }
-            );
+            Task.Factory.StartNew(() => { Invoke(new Action(UpdateCalendarSelectionItems)); });
         }
 
-        private void btnResetCalendar_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Reset calendar button, remove all events from Google Calendar
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void BtnResetCalendar_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(txtCalendarOwner.Text.Trim()) || String.IsNullOrEmpty((cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString()))
+            if (string.IsNullOrEmpty(txtCalendarOwner.Text.Trim()) || string.IsNullOrEmpty((cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString()))
             {
                 MessageBox.Show("Cannot Reset Calendar as Owner and Calendar have not been selected.");
             }
@@ -205,11 +248,10 @@ namespace itdevgeek_charites.screens
                 DialogResult answer = MessageBox.Show("Are you sure you wish to clear all events from the Calendar?", "caption", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
                 if (answer == DialogResult.Yes)
                 {
-                    GCalHelper.clearAllEventsFromCalendar(txtCalendarOwner.Text.Trim(), (cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString(), null);
+                    GCalHelper.ClearAllEventsFromCalendar(txtCalendarOwner.Text.Trim(), (cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString(), null);
                     GCalHelper.googleCalEvents = null;
                 }
             }
-            
         }
     }
 }

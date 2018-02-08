@@ -1,4 +1,10 @@
-﻿namespace itdevgeek_charites.screens
+﻿// -----------------------------------------------------
+// <copyright file="ConfigurationScreen.Designer.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
+namespace itdevgeek_charites.screens
 {
     partial class ConfigurationScreen
     {
@@ -79,7 +85,7 @@
             this.btnLoadCalendars.TabIndex = 2;
             this.btnLoadCalendars.Text = "&Load Calendars";
             this.btnLoadCalendars.UseVisualStyleBackColor = true;
-            this.btnLoadCalendars.Click += new System.EventHandler(this.btnLoadCalendars_Click);
+            this.btnLoadCalendars.Click += new System.EventHandler(this.BtnLoadCalendars_Click);
             // 
             // cbCalendarToUpdate
             // 
@@ -106,7 +112,7 @@
             this.btnSaveSettings.TabIndex = 10;
             this.btnSaveSettings.Text = "&Save Settings";
             this.btnSaveSettings.UseVisualStyleBackColor = true;
-            this.btnSaveSettings.Click += new System.EventHandler(this.btnSaveSettings_Click);
+            this.btnSaveSettings.Click += new System.EventHandler(this.BtnSaveSettings_Click);
             // 
             // btnCancel
             // 
@@ -116,7 +122,7 @@
             this.btnCancel.TabIndex = 9;
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // txtCalendarOwner
             // 
@@ -234,7 +240,7 @@
             this.btnResetCalendar.TabStop = false;
             this.btnResetCalendar.Text = "Reset Calendar";
             this.btnResetCalendar.UseVisualStyleBackColor = false;
-            this.btnResetCalendar.Click += new System.EventHandler(this.btnResetCalendar_Click);
+            this.btnResetCalendar.Click += new System.EventHandler(this.BtnResetCalendar_Click);
             // 
             // ConfigurationScreen
             // 

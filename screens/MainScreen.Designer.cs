@@ -1,4 +1,10 @@
-﻿namespace itdevgeek_charites
+﻿// -----------------------------------------------------
+// <copyright file="MainScreen.Designer.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
+namespace itdevgeek_charites
 {
     partial class MainScreen
     {
@@ -57,7 +63,7 @@
             this.btnExit.Text = "E&xit";
             this.btnExit.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            this.btnExit.Click += new System.EventHandler(this.BtnExit_Click);
             // 
             // btnUpdate
             // 
@@ -70,13 +76,13 @@
             this.btnUpdate.TabIndex = 1;
             this.btnUpdate.Text = "&Update Salon Calendar Now";
             this.btnUpdate.UseVisualStyleBackColor = false;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
+            this.btnUpdate.Click += new System.EventHandler(this.BtnUpdate_Click);
             // 
             // notifyIcon
             // 
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
             this.notifyIcon.Text = "Charites:  Salon Calendar Integration";
-            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseDoubleClick);
             // 
             // statusBar
             // 
@@ -118,7 +124,7 @@
             this.btnSettings.Text = "&Settings";
             this.btnSettings.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnSettings.UseVisualStyleBackColor = true;
-            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+            this.btnSettings.Click += new System.EventHandler(this.BtnSettings_Click);
             // 
             // rtxtAppInfo
             // 

@@ -1,65 +1,126 @@
-﻿using itdevgeek_charites.helper.application;
-using itdevgeek_charites.screens;
-using System;
-using System.ComponentModel;
-using System.Windows.Forms;
-
+﻿// -----------------------------------------------------
+// <copyright file="MainScreen.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites
 {
+    using System;
+    using System.ComponentModel;
+    using System.Windows.Forms;
+    using itdevgeek_charites.helper.application;
+    using itdevgeek_charites.screens;
+
+    /// <summary>
+    /// Main application screen
+    /// </summary>
     public partial class MainScreen : Form
     {
-        private BackgroundWorker bgSynchWorker = new BackgroundWorker();
-
+        /// <summary>Application configuration screen</summary>
         private static ConfigurationScreen settingsScreen;
 
+        /// <summary>background worker to perform google calendar update when manually initiated</summary>
+        private BackgroundWorker backgroundSynchWorker = new BackgroundWorker();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainScreen" /> class.
+        /// </summary>
         public MainScreen()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             sbpanelDateTime.Text = DateTime.Today.ToLongDateString();
             sbpanelDateTime.ToolTipText = "DateTime: " + DateTime.Today.ToLongDateString();
 
             sbpanelAppStatus.Text = "Application started. No action yet.";
 
-            bgSynchWorker.DoWork += new DoWorkEventHandler(bgSynchWorker_DoWork);
-            bgSynchWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgSynchWorker_RunWorkerCompleted);
+            this.backgroundSynchWorker.DoWork += new DoWorkEventHandler(this.BgSynchWorker_DoWork);
+            this.backgroundSynchWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.BgSynchWorker_RunWorkerCompleted);
         }
 
-        void bgSynchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        /// <summary>
+        /// Update the status text
+        /// </summary>
+        /// <param name="updatedText">text to add to the status</param>
+        public void UpdateStatusText(string updatedText)
         {
-            btnSettings.Enabled = true;
-            btnUpdate.Enabled = true;
-            btnExit.Enabled = true;
+            sbpanelAppStatus.Text = updatedText.Trim();
         }
 
-        void bgSynchWorker_DoWork(object sender, DoWorkEventArgs e)
+        /// <summary>
+        /// Shwo the current window
+        /// </summary>
+        public void ShowWindow()
         {
-            Charites.updateGoogleCalendar();
+            // Insert code here to make your form show itself.
+            WinAPI.ShowToFront(this.Handle);
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Override WndProc to account for single instance
+        /// </summary>
+        /// <param name="message">App window message</param>
+        protected override void WndProc(ref Message message)
         {
-            if (Charites.haveRequiredData())
+            if (message.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
             {
+                this.ShowWindow();
+            }
+
+            base.WndProc(ref message);
+        }
+
+        /// <summary>
+        /// Action when notification tray icon is double clicked
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void NotifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon.Visible = false;
+        }
+
+        /// <summary>
+        /// Update button action, perform google calendar sync
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void BtnUpdate_Click(object sender, EventArgs e)
+        {
+            if (Charites.HaveRequiredData())
+            {
+                // disable buttons while performing update
                 btnSettings.Enabled = false;
                 btnUpdate.Enabled = false;
                 btnExit.Enabled = false;
 
-                bgSynchWorker.RunWorkerAsync();
+                this.backgroundSynchWorker.RunWorkerAsync();
             }
             else
             {
                 MessageBox.Show("Please update program settings to enter an Account and select a Calendar to Update.");
             }
-            
         }
 
-        private void btnExit_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Exit button click operation
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void BtnExit_Click(object sender, EventArgs e)
         {
-            Close();
+            this.Close();
         }
 
-        private void btnSettings_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Settings button operation, load the settings screen
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void BtnSettings_Click(object sender, EventArgs e)
         {
             if (settingsScreen == null || settingsScreen.IsDisposed)
             {
@@ -72,34 +133,27 @@ namespace itdevgeek_charites
             settingsScreen.Refresh();
         }
 
-        public void updateStatusText(string updatedText)
+        /// <summary>
+        /// Background worker, work completed, re-enable screen buttons
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        void BgSynchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            sbpanelAppStatus.Text = updatedText.Trim();
+            btnSettings.Enabled = true;
+            btnUpdate.Enabled = true;
+            btnExit.Enabled = true;
         }
 
-        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        /// <summary>
+        /// Background update worker, update the google calendar
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        void BgSynchWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            Show();
-            this.WindowState = FormWindowState.Normal;
-            notifyIcon.Visible = false;
+            Charites.UpdateGoogleCalendar();
         }
-
-
-        protected override void WndProc(ref Message message)
-        {
-            if (message.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
-            {
-                ShowWindow();
-            }
-            base.WndProc(ref message);
-        }
-
-        public void ShowWindow()
-        {
-            // Insert code here to make your form show itself.
-            WinAPI.ShowToFront(this.Handle);
-        }
-
 
     }
 }

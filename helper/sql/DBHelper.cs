@@ -1,19 +1,34 @@
-﻿using itdevgeek_charites.datatypes;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-
+﻿// -----------------------------------------------------
+// <copyright file="DBHelper.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites.helper.sql
 {
-    class DBHelper
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+    using System.Linq;
+    using itdevgeek_charites.datatypes;
+
+    /// <summary>
+    /// SQL DB Helper to get Salon Iris appointments
+    /// </summary>
+    public class DBHelper
     {
+        /// <summary>class logger</summary>
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>Gets or sets SQL Dataset</summary>
         public static DataSet ds { get; set; }
 
-        public static void initData(int workingYear)
+        /// <summary>
+        /// initialise the data connection and dataset
+        /// </summary>
+        /// <param name="workingYear">year to get data for</param>
+        public static void InitData(int workingYear)
         {
             log.Info("Starting Initialising the SQL DB Data");
 
@@ -22,8 +37,10 @@ namespace itdevgeek_charites.helper.sql
             {
                 string connectionString = AppConfiguration.Default.dbConnectionString;
 
-                if (String.IsNullOrEmpty(connectionString))
+                if (string.IsNullOrEmpty(connectionString))
+                {
                     connectionString = "Data Source=localhost;Initial Catalog=SalonIris;Integrated Security=SSPI;";
+                }
 
                 // Create a new adapter and give it a query to fetch
                 SqlDataAdapter da = new SqlDataAdapter(
@@ -37,7 +54,7 @@ namespace itdevgeek_charites.helper.sql
                         "AND DATEPART(YEAR, r.fldStartDate) = @year " +
                         "AND DATEPART(YEAR, r.fldEndDate) = @year " +
                     "ORDER BY r.fldStartDate, r.fldStartTime",
-                connectionString);
+                    connectionString);
 
                 // Add table mappings.
                 da.SelectCommand.Parameters.AddWithValue("@year", workingYear);
@@ -45,7 +62,6 @@ namespace itdevgeek_charites.helper.sql
 
                 // Fill the DataSet.
                 da.Fill(ds);
-
             }
             catch (SqlException ex)
             {
@@ -55,8 +71,11 @@ namespace itdevgeek_charites.helper.sql
             log.Info("Finished Initialising the SQL DB Data");
         }
 
-
-        public static List<GCalEventItem> convertSQLTicketsToEvents()
+        /// <summary>
+        /// Convert SQL appointment data to custom event data structure GCalEventItem
+        /// </summary>
+        /// <returns>Events from the DB</returns>
+        public static List<GCalEventItem> ConvertSQLTicketsToEvents()
         {
             log.Info("Starting Reading of Salon SQL Calendar Data");
 
@@ -89,33 +108,34 @@ namespace itdevgeek_charites.helper.sql
                         ServiceDescription = ticket.Field<string>("serviceDescription")
                     };
 
+                    newEvent.SalonCalendarId = ticketID;
 
-                    newEvent.salonCalendarId = ticketID;
-
-                    newEvent.appointmentType = appointmentQuery.Select(x => x.ServiceDescription).First();
+                    newEvent.AppointmentType = appointmentQuery.Select(x => x.ServiceDescription).First();
                     string clientName = appointmentQuery.Select(x => x.FirstName).First().Trim();
-                    if (!String.IsNullOrEmpty(appointmentQuery.Select(x => x.LastName).First()))
+                    if (!string.IsNullOrEmpty(appointmentQuery.Select(x => x.LastName).First()))
                     {
                         clientName += " ";
                         clientName += appointmentQuery.Select(x => x.LastName).First().Trim();
                     }
-                    newEvent.client = clientName;
+
+                    newEvent.Client = clientName;
 
                     string employee = appointmentQuery.Select(x => x.Employee).FirstOrDefault().ToLower().Trim();
-                    if (String.IsNullOrEmpty(employee))
+                    if (string.IsNullOrEmpty(employee))
                     {
-                        employee = ((NaNStaff.Employees) 0).ToString().ToLower();
+                        employee = ((NaNStaff.Employees)0).ToString().ToLower();
                     }
+
                     switch (employee.ToLower())
                     {
                         case "lyshaie white":
-                            newEvent.staffMember = NaNStaff.Employees.LYSHAIE;
+                            newEvent.StaffMember = NaNStaff.Employees.LYSHAIE;
                             break;
                         case "emma lee":
-                            newEvent.staffMember = NaNStaff.Employees.EMMA;
+                            newEvent.StaffMember = NaNStaff.Employees.EMMA;
                             break;
                         default:
-                            newEvent.staffMember = NaNStaff.Employees.KOULA;
+                            newEvent.StaffMember = NaNStaff.Employees.KOULA;
                             break;
                     }
 
@@ -124,14 +144,13 @@ namespace itdevgeek_charites.helper.sql
                     DateTime appEnd = appointmentQuery.Max(x => x.EndDate);
                     DateTime appEndTime = appointmentQuery.Max(x => x.EndTime);
 
-                    newEvent.startTime = DateTime.Parse(appStart.ToShortDateString() + " " + appStartTime.TimeOfDay);
-                    newEvent.endTime = DateTime.Parse(appEnd.ToShortDateString() + " " + appEndTime.TimeOfDay);
+                    newEvent.StartTime = DateTime.Parse(appStart.ToShortDateString() + " " + appStartTime.TimeOfDay);
+                    newEvent.EndTime = DateTime.Parse(appEnd.ToShortDateString() + " " + appEndTime.TimeOfDay);
 
-                    newEvent.durationMinutes = (newEvent.endTime - newEvent.startTime).TotalMinutes;
+                    newEvent.DurationMinutes = (newEvent.EndTime - newEvent.StartTime).TotalMinutes;
 
                     ticketEvents.Add(newEvent);
                 }
-
             }
             else
             {
@@ -142,7 +161,5 @@ namespace itdevgeek_charites.helper.sql
             log.Info("Finished Reading Salon SQL Calendar Data");
             return ticketEvents;
         }
-
-
     }
 }

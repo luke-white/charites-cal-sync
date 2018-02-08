@@ -1,4 +1,5 @@
-# Charites Calendar Sync [![travis][travis-image]][travis-url] 
+# Charites Calendar Sync 
+//: [![travis][travis-image]][travis-url] 
 
 [travis-image]: https://travis-ci.org/luke-white/charites-cal-sync.svg?branch=master
 [travis-url]: https://travis-ci.org/luke-white/charites-cal-sync

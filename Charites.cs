@@ -1,43 +1,73 @@
-﻿using CrystalJobScheduler;
-using itdevgeek_charites.datatypes;
-using itdevgeek_charites.helper.application;
-using itdevgeek_charites.helper.sql;
-using itdevgeek_charites.screens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows.Forms;
-
+﻿// -----------------------------------------------------
+// <copyright file="Charites.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites
 {
-    static class Charites
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Threading;
+    using System.Windows.Forms;
+    using CrystalJobScheduler;
+    using itdevgeek_charites.datatypes;
+    using itdevgeek_charites.helper.application;
+    using itdevgeek_charites.helper.sql;
+    using itdevgeek_charites.screens;
+
+    /// <summary>
+    /// Charites salon calendar synchronisation application.
+    /// Synch Salon Iris appointments with Google Calendar.
+    /// Allows salon to have a shared google calendar with staff so they can all see upcoming appointments.
+    /// </summary>
+    public static class Charites
     {
+        /// <summary>Log provider</summary>
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>List of updated events</summary>
+        private static List<GCalEventItem> updatedEvents;
+
+        /// <summary>List of deleted events</summary>
+        private static List<GCalEventItem> deletedEvents;
+
+        /// <summary>List of newly created events</summary>
+        private static List<GCalEventItem> newEvents;
+
+        /// <summary>Splash screen form</summary>
+        private static SplashScreen splashScreen;
+
+        /// <summary>Main application form</summary>
+        private static MainScreen mainForm;
+
+        /// <summary>Background job scheduler</summary>
+        private static JobScheduler backgroundUpdateScheduler;
+
+        /// <summary>Gets or sets run in background setting</summary>
         public static bool _runInBackground { get; set; }
+
+        /// <summary>Gets or sets how many minutes to wait between background runs</summary>
         public static int _runInMinutes { get; set; }
 
+        /// <summary>Gets or sets Google calendar owner email address</summary>
         public static string _calendarOwner { get; set; }
+
+        /// <summary>Gets or sets Google calendar ID</summary>
         public static string _calendarId { get; set; }
+
+        /// <summary>Gets or sets Year to perform update/sync for</summary>
         public static DateTime _calendarYear { get; set; }
 
-        public static List<GCalEventItem> _updatedEvents;
-        public static List<GCalEventItem> _deletedEvents;
-        public static List<GCalEventItem> _newEvents;
-
-        // Create an instance of the splashscreen 
-        public static SplashScreen splashScreen;
-        public static MainScreen mainForm;
-
-        public static JobScheduler backgroundUpdateScheduler;
-
         /// <summary>
-        /// The main entry point for the application.
+        /// The main entry point for the application.<br/>
+        ///     - Verify that only one instance of the application is running at any one time.<br/>
+        ///     - Set up background update scheduler and start if run in background is turned on in options.<br/>
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
             log.Info("Launching Charites - Salon Calendar Integration Application....");
 
@@ -51,28 +81,29 @@ namespace itdevgeek_charites
             Application.SetCompatibleTextRenderingDefault(false);
 
             try
-            { 
-                getAppSettingValues();
+            {
+                // get the current app settings
+                GetAppSettingValues();
                 if (_runInBackground)
                 {
-                    setUpBackgroundJob();
+                    SetUpBackgroundJob();
                     if (backgroundUpdateScheduler != null)
                     {
                         backgroundUpdateScheduler.Start();
                     }
                 }
 
-                // Initialize and show splashscreen. Say the welcome message. 
+                // Initialize and show splashscreen.
                 splashScreen = new SplashScreen();
                 splashScreen.Show();
 
-                // Create an instance of MainForm and hook into shown and closed events.
+                // Create an instance of MainForm and hook into window/form shown and closed events.
                 mainForm = new MainScreen();
-                mainForm.Shown += main_Shown;
-                mainForm.Resize += main_Resize;
-                mainForm.FormClosed += main_FormClosed;
+                mainForm.Shown += Main_Shown;
+                mainForm.Resize += Main_Resize;
+                mainForm.FormClosed += Main_FormClosed;
 
-                Thread.Sleep(3000);   // Pause for 3 second.
+                Thread.Sleep(3000);   // Pause for 3 second to show splashscreen
                 Application.Run(mainForm);
             }
             catch (Exception e)
@@ -83,7 +114,12 @@ namespace itdevgeek_charites
             SingleInstance.Stop();
         }
 
-        static void main_FormClosed(object sender, FormClosedEventArgs e)
+        /// <summary>
+        /// Show splash screen when closing application then exit
+        /// </summary>
+        /// <param name="sender">The form being closed</param>
+        /// <param name="e">event arguments</param>
+        public static void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Hide the calling form  
             Form form = sender as Form;
@@ -91,7 +127,7 @@ namespace itdevgeek_charites
 
             // Show the splash screen
             splashScreen.Show();
-            System.Threading.Thread.Sleep(1000);   // Pause for a second.
+            System.Threading.Thread.Sleep(1000);   // Pause for a second to show splash
 
             if (Application.MessageLoop)
             {
@@ -107,30 +143,69 @@ namespace itdevgeek_charites
             }
         }
 
-        static void main_Shown(object sender, EventArgs e)
+        /// <summary>
+        /// Display the main application window and hide the splash screen.
+        /// </summary>
+        /// <param name="sender">Form being displayed causing the event</param>
+        /// <param name="e">The event arguments</param>
+        public static void Main_Shown(object sender, EventArgs e)
         {
             // Hide the splashscreen. 
             splashScreen.Hide();
         }
 
-        static void main_Resize(object sender, EventArgs e)
+        /// <summary>
+        /// Handle minimising the form to the tray icon.
+        /// </summary>
+        /// <param name="sender">Form being resized causing the event</param>
+        /// <param name="e">Event arguments</param>
+        public static void Main_Resize(object sender, EventArgs e)
         {
+            // Minimise to the tray icon 
             if (mainForm.WindowState == FormWindowState.Minimized)
             {
                 mainForm.Hide();
                 mainForm.notifyIcon.Visible = true;
             }
+            else
+            {
+                if (mainForm.notifyIcon.Visible)
+                {
+                    mainForm.notifyIcon.Visible = false;
+                }
+            }
         }
 
+        /// <summary>
+        /// Find window function to allow locating application if launched more than once.
+        /// </summary>
+        /// <param name="className">Class name</param>
+        /// <param name="windowName">Window name</param>
+        /// <returns>Window pointer</returns>
         [DllImportAttribute("user32.dll")]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        public static extern IntPtr FindWindow(string className, string windowName);
 
+        /// <summary>
+        /// Display the window of an application.
+        /// </summary>
+        /// <param name="wnd">Pointer to the window</param>
+        /// <param name="cmdShow">Show window value</param>
+        /// <returns>Success value</returns>
         [DllImportAttribute("user32.dll")]
-        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        public static extern bool ShowWindow(IntPtr wnd, int cmdShow);
 
+        /// <summary>
+        /// Bring window to foreground. Used to display infront if app already running and launched again.
+        /// </summary>
+        /// <param name="wnd">Pointer to the application window</param>
+        /// <returns>Success value</returns>
         [DllImportAttribute("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        public static extern bool SetForegroundWindow(IntPtr wnd);
 
+        /// <summary>
+        /// Bring the application instance to front, used if launched more than once.
+        /// </summary>
+        /// <param name="windowName">Window name to bring to front</param>
         public static void ShowToFront(string windowName)
         {
             IntPtr firstInstance = FindWindow(null, windowName);
@@ -138,7 +213,192 @@ namespace itdevgeek_charites
             SetForegroundWindow(firstInstance);
         }
 
-        private static void getAppSettingValues()
+        /// <summary>
+        /// Perform the update of the Google Calendar
+        /// </summary>
+        public static void UpdateGoogleCalendar()
+        {
+            if (HaveRequiredData())
+            {
+                UpdateProgramStatus("Performing calendar update...");
+                log.Info("Starting the update Process...");
+
+                // Show tool tip in case application is minimised to tray
+                mainForm.notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                mainForm.notifyIcon.BalloonTipTitle = "Performing Update";
+                mainForm.notifyIcon.BalloonTipText = "Updating the Google Calendar with latest Salon Appointments...";
+                mainForm.notifyIcon.ShowBalloonTip(5000);
+
+                // Get Google Calendar Events
+                if (GCalHelper.googleCalEvents == null)
+                {
+                    GCalHelper.GetYearlyEvents(_calendarOwner, _calendarId, _calendarYear, null);
+                }
+
+                List<GCalEventItem> currentGoogEvents = GCalHelper.googleCalEvents;
+
+                // Load Values From Salon Calendar
+                DBHelper.InitData(_calendarYear.Year);
+                List<GCalEventItem> currentSalonEvents = DBHelper.ConvertSQLTicketsToEvents();
+
+                // get New Events to create
+                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
+                {
+                    newEvents = (List<GCalEventItem>)currentSalonEvents.Except(currentGoogEvents).ToList();
+                }
+                else
+                {
+                    newEvents = currentSalonEvents;
+                }
+
+                // get events that need to delete
+                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
+                {
+                    deletedEvents = (List<GCalEventItem>)currentGoogEvents.Except(currentSalonEvents).ToList();
+                }
+                else
+                {
+                    deletedEvents = new List<GCalEventItem>();
+                }
+
+                // get Events that need to update
+                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
+                {
+                    List<GCalEventItem> potentialUpdatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(newEvents).ToList();
+                    foreach (GCalEventItem e in potentialUpdatedEvents)
+                    {
+                        GCalEventItem ge = currentGoogEvents.Find(x => x.SalonCalendarId == e.SalonCalendarId);
+                        if (ge != null)
+                        {
+                            e.EventId = ge.EventId;
+                        }
+                    }
+
+                    List<GCalEventItem> noGoogleIdEvents = potentialUpdatedEvents.FindAll(x => x.EventId == null).ToList();
+                    if (noGoogleIdEvents != null && noGoogleIdEvents.Count > 0)
+                    {
+                        newEvents = (List<GCalEventItem>)newEvents.Concat(noGoogleIdEvents.Except(newEvents)).ToList();
+                        potentialUpdatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(noGoogleIdEvents).ToList();
+                    }
+
+                    List<GCalEventItem> unchangedEvents = new List<GCalEventItem>();
+                    foreach (var ev in potentialUpdatedEvents)
+                    {
+                        var entryToCheck = currentGoogEvents.FirstOrDefault(x => x.SalonCalendarId == ev.SalonCalendarId);
+                        if (entryToCheck != null)
+                        {
+                            if (entryToCheck.AppointmentType != ev.AppointmentType ||
+                                entryToCheck.Client != ev.Client ||
+                                entryToCheck.StaffMember != ev.StaffMember ||
+                                entryToCheck.StartTime != ev.StartTime ||
+                                entryToCheck.EndTime != ev.EndTime ||
+                                entryToCheck.DurationMinutes != ev.DurationMinutes)
+                            {
+                                // need to update so leave in list
+                                log.Debug("Need to update event ->" + entryToCheck.SalonCalendarId);
+                            }
+                            else
+                            {
+                                unchangedEvents.Add(entryToCheck);
+                            }
+                        }
+                    }
+                    
+                    updatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(unchangedEvents).ToList();
+                }
+                else
+                {
+                    updatedEvents = new List<GCalEventItem>();
+                }
+
+                GCalHelper.UpdateGoogleCalendar(_calendarOwner, _calendarId, newEvents, updatedEvents, deletedEvents);
+
+                log.Info("Finished the update Process...");
+                UpdateProgramStatus("Calendar update completed - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt"));
+
+                // Show tool tip in case application is minimised to tray
+                mainForm.notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                mainForm.notifyIcon.BalloonTipTitle = "Update Complete";
+                mainForm.notifyIcon.BalloonTipText = "Update with latest Salon Appointments complete - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt");
+                mainForm.notifyIcon.ShowBalloonTip(5000);
+            }
+            else
+            {
+                log.Error("Could not perform update as required data has not been set.");
+                MessageBox.Show("Please provide the Calendar Owner and other Calendar details before updating.");
+            }
+        }
+
+        /// <summary>
+        /// Update the status bar text on the main form.
+        /// </summary>
+        /// <param name="statusText">New status text to display</param>
+        public static void UpdateProgramStatus(string statusText)
+        {
+            mainForm.UpdateStatusText(statusText);
+        }
+
+        /// <summary>
+        /// Verify all required Google calendar information has been provided for an update
+        /// </summary>
+        /// <returns>Whether application has initialised with required data</returns>
+        public static bool HaveRequiredData()
+        {
+            if (string.IsNullOrEmpty(_calendarId) || string.IsNullOrEmpty(_calendarOwner) || _calendarYear == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Update the background scheduler if application settings have been modified.
+        /// Stop scheduler if run in background is no longer enabled or vise versa.
+        /// </summary>
+        public static void UpdatedSettings()
+        {
+            if (!_runInBackground)
+            {
+                if (backgroundUpdateScheduler != null)
+                {
+                    backgroundUpdateScheduler.Stop();
+                    backgroundUpdateScheduler = null;
+                }
+            }
+            else
+            {
+                SetUpBackgroundJob();
+                if (backgroundUpdateScheduler != null)
+                {
+                    backgroundUpdateScheduler.Start();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Configure the background scheduler that updates the calendar in the background
+        /// </summary>
+        private static void SetUpBackgroundJob()
+        {
+            if (backgroundUpdateScheduler != null)
+            {
+                backgroundUpdateScheduler.Stop();
+                backgroundUpdateScheduler = null;
+            }
+
+            if (_runInMinutes > 0)
+            {
+                backgroundUpdateScheduler = new JobScheduler(TimeSpan.FromMinutes(_runInMinutes), () => { UpdateGoogleCalendar(); });
+            }
+        }
+
+        /// <summary>
+        /// Load the initial application settings from app configuration file on launch.
+        /// </summary>
+        private static void GetAppSettingValues()
         {
             _runInBackground = false;
             if (AppConfiguration.Default.run_in_background)
@@ -155,172 +415,17 @@ namespace itdevgeek_charites
                 AppConfiguration.Default.Save();
             }
 
-            if (!String.IsNullOrEmpty(AppConfiguration.Default.email_address.Trim()))
+            if (!string.IsNullOrEmpty(AppConfiguration.Default.email_address.Trim()))
             {
                 _calendarOwner = AppConfiguration.Default.email_address.Trim();
             }
 
-            if (!String.IsNullOrEmpty(AppConfiguration.Default.calendar_id.Trim()))
+            if (!string.IsNullOrEmpty(AppConfiguration.Default.calendar_id.Trim()))
             {
                 _calendarId = AppConfiguration.Default.calendar_id.Trim();
             }
 
             _calendarYear = DateTime.Now;
-        }
-
-        public static void updateGoogleCalendar()
-        {
-            if (haveRequiredData())
-            {
-                log.Info("Starting the update Process...");
-                mainForm.notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
-                mainForm.notifyIcon.BalloonTipTitle = "Performing Update";
-                mainForm.notifyIcon.BalloonTipText = "Updating the Google Calendar with latest Salon Appointments...";
-                mainForm.notifyIcon.ShowBalloonTip(5000);
-
-                // Get Google Calendar Events
-                if (GCalHelper.googleCalEvents == null)
-                {
-                    GCalHelper.getYearlyEvents(_calendarOwner, _calendarId, _calendarYear, null);
-                }
-                List<GCalEventItem> currentGoogEvents = GCalHelper.googleCalEvents;
-
-                // Load Values From Salon Calendar
-                DBHelper.initData(_calendarYear.Year);
-                List<GCalEventItem> currentSalonEvents = DBHelper.convertSQLTicketsToEvents();
-
-                // get New Events to create
-                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
-                {
-                    _newEvents = (List<GCalEventItem>)currentSalonEvents.Except(currentGoogEvents).ToList();
-                }
-                else
-                {
-                    _newEvents = currentSalonEvents;
-                }
-
-                // get events that need to delete
-                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
-                {
-                    _deletedEvents = (List<GCalEventItem>)currentGoogEvents.Except(currentSalonEvents).ToList();
-                }
-                else
-                {
-                    _deletedEvents = new List<GCalEventItem>();
-                }
-
-                // get Events that need to update
-                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
-                {
-                    List<GCalEventItem> potentialUpdatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(_newEvents).ToList();
-                    //_updatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(_newEvents).ToList();
-                    foreach (GCalEventItem e in potentialUpdatedEvents)
-                    {
-                        GCalEventItem ge = currentGoogEvents.Find(x => x.salonCalendarId == e.salonCalendarId);
-                        if (ge != null)
-                        {
-                            e.eventId = ge.eventId;
-                        }
-                    }
-                    List<GCalEventItem> noGoogleIdEvents = potentialUpdatedEvents.FindAll(x => x.eventId == null).ToList();
-                    if (noGoogleIdEvents != null && noGoogleIdEvents.Count > 0)
-                    {
-                        _newEvents = (List<GCalEventItem>)_newEvents.Concat(noGoogleIdEvents.Except(_newEvents)).ToList();
-                        potentialUpdatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(noGoogleIdEvents).ToList();
-                    }
-
-                    List<GCalEventItem> unchangedEvents = new List<GCalEventItem>();
-                    foreach (var ev in potentialUpdatedEvents)
-                    {
-                        var entryToCheck = currentGoogEvents.FirstOrDefault(x => x.salonCalendarId == ev.salonCalendarId);
-                        if (entryToCheck != null)
-                        {
-                            if (entryToCheck.appointmentType != ev.appointmentType ||
-                                entryToCheck.client != ev.client ||
-                                entryToCheck.staffMember != ev.staffMember ||
-                                entryToCheck.startTime != ev.startTime ||
-                                entryToCheck.endTime != ev.endTime ||
-                                entryToCheck.durationMinutes != ev.durationMinutes)
-                            {
-                                // need to update so leave in list
-                                log.Debug("Need to update event ->" + entryToCheck.salonCalendarId);
-                            }
-                            else
-                            {
-                                unchangedEvents.Add(entryToCheck);
-                            }
-                        }
-                    }
-                    
-                    _updatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(unchangedEvents).ToList();
-                }
-                else
-                {
-                    _updatedEvents = new List<GCalEventItem>();
-                }
-
-                GCalHelper.updateGoogleCalendar(_calendarOwner, _calendarId, _newEvents, _updatedEvents, _deletedEvents);
-
-                log.Info("Finished the update Process...");
-            }
-            else
-            {
-                log.Error("Could not perform update as required data has not been set.");
-                MessageBox.Show("Please provide the Calendar Owner and other Calendar details before updating.");
-            }
-        }
-
-        public static void updateProgramStatus(string statusText)
-        {
-            mainForm.updateStatusText(statusText);
-        }
-
-        public static bool haveRequiredData()
-        {
-            if (String.IsNullOrEmpty(_calendarId) || String.IsNullOrEmpty(_calendarOwner) || _calendarYear == null )
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        private static void setUpBackgroundJob()
-        {
-            if (backgroundUpdateScheduler != null)
-            {
-                backgroundUpdateScheduler.Stop();
-                backgroundUpdateScheduler = null;
-            }
-            if (_runInMinutes > 0)
-            {
-                backgroundUpdateScheduler = new JobScheduler(TimeSpan.FromMinutes(5), () =>
-                {
-                    updateGoogleCalendar();
-                });
-            }
-        }
-
-        public static void updatedSettings()
-        {
-            if (!_runInBackground)
-            {
-                if (backgroundUpdateScheduler != null)
-                {
-                    backgroundUpdateScheduler.Stop();
-                    backgroundUpdateScheduler = null;
-                }
-            }
-            else
-            {
-                setUpBackgroundJob();
-                if (backgroundUpdateScheduler != null)
-                {
-                    backgroundUpdateScheduler.Start();
-                }
-            }
         }
     }
 }

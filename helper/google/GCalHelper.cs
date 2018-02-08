@@ -1,45 +1,68 @@
-﻿using Google.Apis.Calendar.v3;
-using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Requests;
-using Google.Apis.Services;
-using itdevgeek_charites.datatypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Google.Apis.Calendar.v3.Data.Event;
-
+﻿// -----------------------------------------------------
+// <copyright file="GCalHelper.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites
 {
-    class GCalHelper
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Google.Apis.Calendar.v3;
+    using Google.Apis.Calendar.v3.Data;
+    using Google.Apis.Requests;
+    using Google.Apis.Services;
+    using itdevgeek_charites.datatypes;
+    using static Google.Apis.Calendar.v3.Data.Event;
+
+    /// <summary>
+    /// Google Calendar Helper Class
+    /// Interacts with the Google Calendar API
+    /// </summary>
+    public class GCalHelper
     {
+        /// <summary>Class logger</summary>
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static string APP_NAME = "Salon Calendar Integration";
+        /// <summary>application name used for Googel service</summary>
+        private static string APP_NAME = "Salon Calendar Integration";
 
+        /// <summary>Gets or sets the list of Google calendar events</summary>
         public static List<GCalEventItem> googleCalEvents { get; set; }
 
-        public static CalendarService getCalendarService(string owner)
+        /// <summary>
+        /// Get the Google Calendar API service for a user
+        /// </summary>
+        /// <param name="owner">Google account to get service for</param>
+        /// <returns>Google Calendar API service</returns>
+        public static CalendarService GetCalendarService(string owner)
         {
             log.Debug("Get Google Calendar Service");
+            
             // Create Google Calendar API service.
             var service = new CalendarService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = GAuthHelper.getCredential(owner),
+                HttpClientInitializer = GAuthHelper.GetCredential(owner),
                 ApplicationName = APP_NAME,
             });
 
             return service;
         }
 
-        public static CalendarListItem[] getCalendars(string owner)
+        /// <summary>
+        /// Get the list of calendars in the Google account
+        /// </summary>
+        /// <param name="owner">Accoutn to return list of calendars for</param>
+        /// <returns>List of google calendar names and id's associated with the Google account</returns>
+        public static CalendarListItem[] GetCalendars(string owner)
         {
             log.Info("Starting Retrieval of Google Calendars for " + owner);
 
-            CalendarListItem[] oCalendars = new CalendarListItem[0];
+            CalendarListItem[] lstCalendars = new CalendarListItem[0];
 
-            CalendarListResource.ListRequest request = getCalendarService(owner).CalendarList.List();
+            CalendarListResource.ListRequest request = GetCalendarService(owner).CalendarList.List();
             request.ShowDeleted = false;
             request.ShowHidden = false;
             request.MaxResults = 20;
@@ -48,7 +71,7 @@ namespace itdevgeek_charites
 
             if (calendars.Items != null && calendars.Items.Count > 0)
             {
-                oCalendars = new CalendarListItem[calendars.Items.Count];
+                lstCalendars = new CalendarListItem[calendars.Items.Count];
                 int count = 0;
 
                 foreach (var calItem in calendars.Items)
@@ -60,21 +83,29 @@ namespace itdevgeek_charites
                     item.Text = calName;
                     item.Value = calId;
 
-                    oCalendars[count] = item;
+                    lstCalendars[count] = item;
 
                     count++;
                 }
             }
 
             log.Info("Finished Retrieval of Google Calendars for " + owner);
-            return oCalendars;
+            return lstCalendars;
         }
 
-        public static void getYearlyEvents(string owner, string calendarId, DateTime updateYear, string pageToken)
+        /// <summary>
+        /// Get the current Google calendar events for a year
+        /// </summary>
+        /// <param name="owner">Google account</param>
+        /// <param name="calendarId">Calendar ID</param>
+        /// <param name="updateYear">Year to get events for</param>
+        /// <param name="pageToken">Whether there are more pages of events</param>
+        public static void GetYearlyEvents(string owner, string calendarId, DateTime updateYear, string pageToken)
         {
-            if (String.IsNullOrEmpty(pageToken))
+            if (string.IsNullOrEmpty(pageToken))
+            {
                 log.Info("Starting Retrieval of Events from " + owner + "'s Google Calendar (" + calendarId + ") for " + updateYear.Year);
-
+            }
 
             int year = updateYear.Year;
 
@@ -82,7 +113,7 @@ namespace itdevgeek_charites
             DateTime maxTime = DateTime.Parse("1/1/" + (year + 1) + " 00:00:00");
 
             // Define parameters of request.
-            EventsResource.ListRequest request = getCalendarService(owner).Events.List(calendarId);
+            EventsResource.ListRequest request = GetCalendarService(owner).Events.List(calendarId);
 
             request.ShowDeleted = false;
             request.SingleEvents = true;
@@ -90,7 +121,7 @@ namespace itdevgeek_charites
             request.TimeMin = minTime;
             request.TimeMax = maxTime;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
-            if (!String.IsNullOrEmpty(pageToken))
+            if (!string.IsNullOrEmpty(pageToken))
             {
                 request.PageToken = pageToken;
             }
@@ -103,67 +134,72 @@ namespace itdevgeek_charites
                 {
                     googleCalEvents = new List<GCalEventItem>();
                 }
+
                 foreach (var eventItem in events.Items)
                 {
                     GCalEventItem entry = new GCalEventItem();
 
-                    entry.eventId = eventItem.Id;
+                    entry.EventId = eventItem.Id;
 
                     string when = eventItem.Start.DateTime.ToString();
-                    if (String.IsNullOrEmpty(when))
+                    if (string.IsNullOrEmpty(when))
                     {
                         when = eventItem.Start.Date;
                     }
+
                     string ending = eventItem.End.DateTime.ToString();
-                    if (String.IsNullOrEmpty(ending))
+                    if (string.IsNullOrEmpty(ending))
                     {
                         ending = eventItem.End.Date;
                     }
 
-                    entry.startTime = DateTime.Parse(when);
-                    entry.endTime = DateTime.Parse(ending);
+                    entry.StartTime = DateTime.Parse(when);
+                    entry.EndTime = DateTime.Parse(ending);
 
-                    entry.durationMinutes = (entry.endTime - entry.startTime).TotalMinutes;
-
-                    //entry.appointmentType = eventItem.Summary;
+                    entry.DurationMinutes = (entry.EndTime - entry.StartTime).TotalMinutes;
 
                     List<KeyValuePair<string, string>> extraProps = eventItem.ExtendedProperties.Private__.ToList();
                     string key = "staffMember";
                     string staffMember = (from kvp in extraProps where kvp.Key == key select kvp.Value).Single();
 
-                    if (!String.IsNullOrEmpty(staffMember))
+                    if (!string.IsNullOrEmpty(staffMember))
                     {
                         if (staffMember.ToUpper().Equals(((NaNStaff.Employees)2).ToString()))
-                            entry.staffMember = NaNStaff.Employees.LYSHAIE;
+                        {
+                            entry.StaffMember = NaNStaff.Employees.LYSHAIE;
+                        }
                         else if (staffMember.ToUpper().Equals(((NaNStaff.Employees)1).ToString()))
-                            entry.staffMember = NaNStaff.Employees.EMMA;
+                        {
+                            entry.StaffMember = NaNStaff.Employees.EMMA;
+                        }
                         else
-                            entry.staffMember = NaNStaff.Employees.KOULA;
+                        {
+                            entry.StaffMember = NaNStaff.Employees.KOULA;
+                        }
                     }
 
                     key = "appointmentType";
                     string appointmentType = (from kvp in extraProps where kvp.Key == key select kvp.Value).Single();
-                    if (!String.IsNullOrEmpty(appointmentType))
+                    if (!string.IsNullOrEmpty(appointmentType))
                     {
-                        entry.appointmentType = appointmentType;
+                        entry.AppointmentType = appointmentType;
                     }
 
                     key = "client";
                     string client = (from kvp in extraProps where kvp.Key == key select kvp.Value).Single();
-                    if (!String.IsNullOrEmpty(client))
+                    if (!string.IsNullOrEmpty(client))
                     {
-                        entry.client = client;
+                        entry.Client = client;
                     }
 
                     key = "salonCalId";
                     string salonCalId = (from kvp in extraProps where kvp.Key == key select kvp.Value).Single();
-                    if (!String.IsNullOrEmpty(salonCalId))
+                    if (!string.IsNullOrEmpty(salonCalId))
                     {
-                        entry.salonCalendarId = int.Parse(salonCalId);
+                        entry.SalonCalendarId = int.Parse(salonCalId);
                     }
 
                     googleCalEvents.Add(entry);
-
                 }
             }
             else
@@ -171,78 +207,99 @@ namespace itdevgeek_charites
                 log.Info("No upcoming events found in Google Calendar.");
             }
 
-            if (!String.IsNullOrEmpty(events.NextPageToken))
+            // Response has more pages of events, get the next page for processing
+            if (!string.IsNullOrEmpty(events.NextPageToken))
             {
-                getYearlyEvents(owner, calendarId, updateYear, events.NextPageToken);
+                GetYearlyEvents(owner, calendarId, updateYear, events.NextPageToken);
             }
 
             log.Info("Finished Retrieval of Events from " + owner + "'s Google Calendar (" + calendarId + ") for " + updateYear.Year);
         }
 
-        public static async void clearAllEventsFromCalendar(string owner, string calendarId, string pageToken)
+        /// <summary>
+        /// Remove all events currently in a calendar
+        /// </summary>
+        /// <param name="owner">Calendar owner</param>
+        /// <param name="calendarId">Calendar ID</param>
+        /// <param name="pageToken">Whether there are more pages of events to clear</param>
+        public static async void ClearAllEventsFromCalendar(string owner, string calendarId, string pageToken)
         {
-            EventsResource.ListRequest request = getCalendarService(owner).Events.List(calendarId);
+            EventsResource.ListRequest request = GetCalendarService(owner).Events.List(calendarId);
 
             request.ShowDeleted = false;
             request.SingleEvents = true;
             request.MaxResults = 2500;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
-            if (!String.IsNullOrEmpty(pageToken))
+            if (!string.IsNullOrEmpty(pageToken))
             {
                 request.PageToken = pageToken;
             }
+
             // List events.
             Events events = request.Execute();
             if (events.Items != null && events.Items.Count > 0)
             {
-                await deleteGoogleEventsAsync(owner, calendarId, events);
+                await DeleteGoogleEventsAsync(owner, calendarId, events);
             }
 
-            if (!String.IsNullOrEmpty(events.NextPageToken))
+            // If there are more pages of events continue removing next page
+            if (!string.IsNullOrEmpty(events.NextPageToken))
             {
-                clearAllEventsFromCalendar(owner, calendarId, events.NextPageToken);
+                ClearAllEventsFromCalendar(owner, calendarId, events.NextPageToken);
             }
         }
 
-
-        public static async void updateGoogleCalendar(string owner, string calendarId, List<GCalEventItem> newEvents, List<GCalEventItem> updatedEvents, List<GCalEventItem> deletedEvents)
+        /// <summary>
+        /// Update the google calendar with provided event details
+        /// </summary>
+        /// <param name="owner">Calendar owner</param>
+        /// <param name="calendarId">Calendar ID</param>
+        /// <param name="newEvents">new events to add</param>
+        /// <param name="updatedEvents">events to update</param>
+        /// <param name="deletedEvents">events to remove</param>
+        public static async void UpdateGoogleCalendar(string owner, string calendarId, List<GCalEventItem> newEvents, List<GCalEventItem> updatedEvents, List<GCalEventItem> deletedEvents)
         {
             log.Info("Starting Update Requests for Google Calendar");
 
             if (deletedEvents != null && deletedEvents.Count > 0)
             {
-                await deleteGoogleEventsAsync(owner, calendarId, deletedEvents);
+                await DeleteGoogleEventsAsync(owner, calendarId, deletedEvents);
             }
 
             if (newEvents != null && newEvents.Count > 0)
             {
-                await createNewEventsAsync(owner, calendarId, newEvents);
+                await CreateNewEventsAsync(owner, calendarId, newEvents);
             }
 
             if (updatedEvents != null && updatedEvents.Count > 0)
             {
-                await updateGoogleEventsAsync(owner, calendarId, updatedEvents);
+                await UpdateGoogleEventsAsync(owner, calendarId, updatedEvents);
             }
 
             log.Info("Finished Update Requests for Google Calendar");
-
         }
 
-
-        private static async Task createNewEventsAsync(string owner, string calendarId, List<GCalEventItem> events)
+        /// <summary>
+        /// Create new events in the Google Calendar
+        /// </summary>
+        /// <param name="owner">Calendar owner</param>
+        /// <param name="calendarId">Calendar id</param>
+        /// <param name="events">list of events to create</param>
+        /// <returns>async Task for running API in background</returns>
+        private static async Task CreateNewEventsAsync(string owner, string calendarId, List<GCalEventItem> events)
         {
             // Create a batch request.
-            var request = new BatchRequest(getCalendarService(owner));
+            var request = new BatchRequest(GetCalendarService(owner));
             
             foreach (GCalEventItem e in events)
             {
                 Event tempEvent = new Event();
 
-                string summary = e.staffMember.ToString() + ": " + e.client;
+                string summary = e.StaffMember.ToString() + ": " + e.Client;
 
                 tempEvent.Summary = summary;
-                tempEvent.Start = new EventDateTime() { DateTime = e.startTime };
-                tempEvent.End = new EventDateTime() { DateTime = e.endTime };
+                tempEvent.Start = new EventDateTime() { DateTime = e.StartTime };
+                tempEvent.End = new EventDateTime() { DateTime = e.EndTime };
 
                 RemindersData eventReminders = new RemindersData();
                 List<EventReminder> eventReminder = new List<EventReminder>();
@@ -252,31 +309,31 @@ namespace itdevgeek_charites
 
                 tempEvent.Reminders = eventReminders;
 
-                ExtendedPropertiesData exProps = new ExtendedPropertiesData();
-                exProps.Private__ = new Dictionary<string, string>();
-                exProps.Private__.Add("staffMember", e.staffMember.ToString());
-                exProps.Private__.Add("appointmentType", e.appointmentType);
-                exProps.Private__.Add("client", e.client);
-                exProps.Private__.Add("salonCalId", e.salonCalendarId.ToString());
+                ExtendedPropertiesData extendedProps = new ExtendedPropertiesData();
+                extendedProps.Private__ = new Dictionary<string, string>();
+                extendedProps.Private__.Add("staffMember", e.StaffMember.ToString());
+                extendedProps.Private__.Add("appointmentType", e.AppointmentType);
+                extendedProps.Private__.Add("client", e.Client);
+                extendedProps.Private__.Add("salonCalId", e.SalonCalendarId.ToString());
 
-                tempEvent.ExtendedProperties = exProps;
+                tempEvent.ExtendedProperties = extendedProps;
 
                 request.Queue<Event>(
-                    getCalendarService(owner).Events.Insert(tempEvent, calendarId), (content, error, i, message) =>
+                    GetCalendarService(owner).Events.Insert(tempEvent, calendarId), (content, error, i, message) =>
                     {
                         // Put your callback code here.
                         if (error != null)
                         {
                             log.Error("Error creating new appointments in Google Calendar: " + error.Message);
                         }
+
                         if (content != null)
                         {
                             // do something
                             log.Debug("New event id = " + content.Id);
-                            e.eventId = content.Id;
+                            e.EventId = content.Id;
                         }
-                    }
-                );
+                    });
             }
 
             // Execute the batch request
@@ -292,20 +349,27 @@ namespace itdevgeek_charites
             }
         }
 
-        private static async Task updateGoogleEventsAsync(string owner, string calendarId, List<GCalEventItem> events)
+        /// <summary>
+        /// Update Google Events in Google Calenar
+        /// </summary>
+        /// <param name="owner">calendar owner</param>
+        /// <param name="calendarId">calendar id</param>
+        /// <param name="events">events to update</param>
+        /// <returns>async task for the background Api tasks</returns>
+        private static async Task UpdateGoogleEventsAsync(string owner, string calendarId, List<GCalEventItem> events)
         {
             // Create a batch request.
-            var request = new BatchRequest(getCalendarService(owner));
+            var request = new BatchRequest(GetCalendarService(owner));
 
             foreach (GCalEventItem e in events)
             {
                 Event tempEvent = new Event();
 
-                string summary = e.staffMember.ToString() + ": " + e.client;
+                string summary = e.StaffMember.ToString() + ": " + e.Client;
 
                 tempEvent.Summary = summary;
-                tempEvent.Start = new EventDateTime() { DateTime = e.startTime };
-                tempEvent.End = new EventDateTime() { DateTime = e.endTime };
+                tempEvent.Start = new EventDateTime() { DateTime = e.StartTime };
+                tempEvent.End = new EventDateTime() { DateTime = e.EndTime };
 
                 RemindersData eventReminders = new RemindersData();
                 List<EventReminder> eventReminder = new List<EventReminder>();
@@ -315,25 +379,24 @@ namespace itdevgeek_charites
 
                 tempEvent.Reminders = eventReminders;
 
-                ExtendedPropertiesData exProps = new ExtendedPropertiesData();
-                exProps.Private__ = new Dictionary<string, string>();
-                exProps.Private__.Add("staffMember", e.staffMember.ToString());
-                exProps.Private__.Add("appointmentType", e.appointmentType);
-                exProps.Private__.Add("client", e.client);
-                exProps.Private__.Add("salonCalId", e.salonCalendarId.ToString());
+                ExtendedPropertiesData extendedProps = new ExtendedPropertiesData();
+                extendedProps.Private__ = new Dictionary<string, string>();
+                extendedProps.Private__.Add("staffMember", e.StaffMember.ToString());
+                extendedProps.Private__.Add("appointmentType", e.AppointmentType);
+                extendedProps.Private__.Add("client", e.Client);
+                extendedProps.Private__.Add("salonCalId", e.SalonCalendarId.ToString());
 
-                tempEvent.ExtendedProperties = exProps;
+                tempEvent.ExtendedProperties = extendedProps;
 
                 request.Queue<Event>(
-                    getCalendarService(owner).Events.Update(tempEvent, calendarId, e.eventId), (content, error, i, message) =>
+                    GetCalendarService(owner).Events.Update(tempEvent, calendarId, e.EventId), (content, error, i, message) =>
                     {
                         // Put your callback code here.
                         if (error != null)
                         {
                             log.Error("Error updating Google Calendar with new details: " + error.Message);
                         }
-                    }
-                );
+                    });
             }
 
             // Execute the batch request
@@ -341,39 +404,45 @@ namespace itdevgeek_charites
 
             foreach (var ev in events)
             {
-                var entryToUpdate = googleCalEvents.FirstOrDefault(x => x.salonCalendarId == ev.salonCalendarId);
+                var entryToUpdate = googleCalEvents.FirstOrDefault(x => x.SalonCalendarId == ev.SalonCalendarId);
                 if (entryToUpdate != null)
                 {
-                    entryToUpdate.eventId = ev.eventId;
-                    entryToUpdate.appointmentType = ev.appointmentType;
-                    entryToUpdate.client = ev.client;
+                    entryToUpdate.EventId = ev.EventId;
+                    entryToUpdate.AppointmentType = ev.AppointmentType;
+                    entryToUpdate.Client = ev.Client;
 
-                    entryToUpdate.staffMember = ev.staffMember;
+                    entryToUpdate.StaffMember = ev.StaffMember;
 
-                    entryToUpdate.startTime = ev.startTime;
-                    entryToUpdate.endTime = ev.endTime;
-                    entryToUpdate.durationMinutes = ev.durationMinutes;
+                    entryToUpdate.StartTime = ev.StartTime;
+                    entryToUpdate.EndTime = ev.EndTime;
+                    entryToUpdate.DurationMinutes = ev.DurationMinutes;
                 }
             }
         }
 
-        private static async Task deleteGoogleEventsAsync(string owner, string calendarId, List<GCalEventItem> events)
+        /// <summary>
+        /// Delete Events from the Google Calendar
+        /// </summary>
+        /// <param name="owner">calendar owner</param>
+        /// <param name="calendarId">calendar id</param>
+        /// <param name="events">events to remove</param>
+        /// <returns>async task for the background Api tasks</returns>
+        private static async Task DeleteGoogleEventsAsync(string owner, string calendarId, List<GCalEventItem> events)
         {
             // Create a batch request.
-            var request = new BatchRequest(getCalendarService(owner));
+            var request = new BatchRequest(GetCalendarService(owner));
 
             foreach (GCalEventItem e in events)
             {
                 request.Queue<Event>(
-                    getCalendarService(owner).Events.Delete(calendarId, e.eventId), (content, error, i, message) =>
+                    GetCalendarService(owner).Events.Delete(calendarId, e.EventId), (content, error, i, message) =>
                     {
                         // Put your callback code here.
                         if (error != null)
                         {
                             log.Error("Error deleting removed appointments from Google Calendar: " + error.Message);
                         }
-                    }
-                );
+                    });
             }
 
             // Execute the batch request
@@ -382,23 +451,29 @@ namespace itdevgeek_charites
             googleCalEvents = (List<GCalEventItem>)googleCalEvents.Except(events).ToList();
         }
 
-        private static async Task deleteGoogleEventsAsync(string owner, string calendarId, Events events)
+        /// <summary>
+        /// Delete Google API Events from Google Calendar
+        /// </summary>
+        /// <param name="owner">calendar owner</param>
+        /// <param name="calendarId">calendar id</param>
+        /// <param name="events">Google API Events object</param>
+        /// <returns>async task for the background Api tasks</returns>
+        private static async Task DeleteGoogleEventsAsync(string owner, string calendarId, Events events)
         {
             // Create a batch request.
-            var request = new BatchRequest(getCalendarService(owner));
+            var request = new BatchRequest(GetCalendarService(owner));
 
             foreach (Event e in events.Items)
             {
                 request.Queue<Event>(
-                    getCalendarService(owner).Events.Delete(calendarId, e.Id), (content, error, i, message) =>
+                    GetCalendarService(owner).Events.Delete(calendarId, e.Id), (content, error, i, message) =>
                     {
                         // Put your callback code here.
                         if (error != null)
                         {
                             log.Error("Error deleting event from Google Calendar: " + error.Message);
                         }
-                    }
-                );
+                    });
             }
 
             // Execute the batch request

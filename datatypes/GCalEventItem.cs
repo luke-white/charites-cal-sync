@@ -1,40 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿// -----------------------------------------------------
+// <copyright file="GCalEventItem.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites.datatypes
 {
-    class GCalEventItem
+    using System;
+
+    /// <summary>
+    /// Google Calendar Event Data Object
+    /// Represents the salon appointment in Google Calendar
+    /// </summary>
+    public class GCalEventItem
     {
-        public string eventId { get; set; }
+        /// <summary>Gets or sets Google Calendar Event item unique ID</summary>
+        public string EventId { get; set; }
 
-        public int salonCalendarId { get; set; }
+        /// <summary>Gets or sets Salon Iris Calendar appointment unique ID</summary>
+        public int SalonCalendarId { get; set; }
 
-        public string client { get; set; }
-        public string appointmentType { get; set; }
+        /// <summary>Gets or sets Client name for the appointment</summary>
+        public string Client { get; set; }
 
-        public NaNStaff.Employees staffMember { get; set; }
+        /// <summary>Gets or sets Service that the appointment is for</summary>
+        public string AppointmentType { get; set; }
 
-        public DateTime startTime { get; set; }
-        public DateTime endTime { get; set; }
+        /// <summary>Gets or sets Staff member who the appointment is booked with</summary>
+        public NaNStaff.Employees StaffMember { get; set; }
 
-        public double durationMinutes { get; set; }
+        /// <summary>Gets or sets Appointment start time</summary>
+        public DateTime StartTime { get; set; }
 
+        /// <summary>Gets or sets Appointment end time</summary>
+        public DateTime EndTime { get; set; }
 
-        public override bool Equals(Object obj)
+        /// <summary>Gets or sets Appointment duration in minutes</summary>
+        public double DurationMinutes { get; set; }
+
+        /// <summary>
+        /// Equal method to validate event is equal based on the Salon Iris Calendar ID
+        /// </summary>
+        /// <param name="obj">Object to compare with the object</param>
+        /// <returns>Whether the objects are equal</returns>
+        public override bool Equals(object obj)
         {
-            //Check for null and compare run-time types.
+            // Check for null and compare run-time types.
             if (obj == null || GetType() != obj.GetType())
+            {
                 return false;
+            }
+
             GCalEventItem m = (GCalEventItem)obj;
-            return (salonCalendarId == m.salonCalendarId);
+            return this.SalonCalendarId == m.SalonCalendarId;
         }
 
+        /// <summary>
+        /// Override Hash Code to use the unique salon iris calendar id
+        /// </summary>
+        /// <returns>salon calendar id</returns>
         public override int GetHashCode()
         {
-            return salonCalendarId;
+            return this.SalonCalendarId;
         }
     }
 }

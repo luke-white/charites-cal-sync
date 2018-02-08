@@ -1,5 +1,10 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿// -----------------------------------------------------
+// <copyright company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
