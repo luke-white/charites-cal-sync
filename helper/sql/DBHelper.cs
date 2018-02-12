@@ -51,6 +51,8 @@ namespace itdevgeek_charites.helper.sql
                     "FROM SalonIris.dbo.tblTicketsSummary s, SalonIris.dbo.tblTicketsRow r " +
                     "WHERE " +
                         "s.fldTicketID = r.fldTicketID " +
+                        "AND r.fldID <> '.CR' " +
+                        "AND r.fldID <> '.CA' " +
                         "AND DATEPART(YEAR, r.fldStartDate) = @year " +
                         "AND DATEPART(YEAR, r.fldEndDate) = @year " +
                     "ORDER BY r.fldStartDate, r.fldStartTime",
@@ -81,75 +83,82 @@ namespace itdevgeek_charites.helper.sql
 
             List<GCalEventItem> ticketEvents = new List<GCalEventItem>();
 
-            if (ds != null)
+            if (ds != null && ds.Tables.Count > 0)
             {
-                DataTable tickets = ds.Tables["Tickets"];
-                var ticketIDQuery = from ticket in tickets.AsEnumerable() select ticket.Field<int>("id");
+                try
+                { 
+                    DataTable tickets = ds.Tables["Tickets"];
+                    var ticketIDQuery = from ticket in tickets.AsEnumerable() select ticket.Field<int>("id");
 
-                List<int> ticketIDs = ticketIDQuery.GroupBy(x => x).Select(y => y.First()).OrderBy(z => z).ToList();
+                    List<int> ticketIDs = ticketIDQuery.GroupBy(x => x).Select(y => y.First()).OrderBy(z => z).ToList();
 
-                foreach (int ticketID in ticketIDs)
+                    foreach (int ticketID in ticketIDs)
+                    {
+                        GCalEventItem newEvent = new GCalEventItem();
+
+                        var appointmentQuery = from ticket in tickets.AsEnumerable()
+                                               where ticket.Field<int>("id") == ticketID
+                                               select new
+                                               {
+                                                   TicketId = ticket.Field<int>("id"),
+                                                   ClientId = ticket.Field<int>("clientId"),
+                                                   FirstName = ticket.Field<string>("clientFirstName"),
+                                                   LastName = ticket.Field<string>("clientLastName"),
+                                                   Employee = ticket.Field<string>("staff"),
+                                                   StartDate = ticket.Field<DateTime>("startDate"),
+                                                   EndDate = ticket.Field<DateTime>("endDate"),
+                                                   StartTime = ticket.Field<DateTime>("startTime"),
+                                                   EndTime = ticket.Field<DateTime>("endTime"),
+                                                   ServiceDescription = ticket.Field<string>("serviceDescription")
+                                               };
+
+                        newEvent.SalonCalendarId = ticketID;
+
+                        newEvent.AppointmentType = appointmentQuery.Select(x => x.ServiceDescription).First();
+                        string clientName = appointmentQuery.Select(x => x.FirstName).First().Trim();
+                        if (!string.IsNullOrEmpty(appointmentQuery.Select(x => x.LastName).First()))
+                        {
+                            clientName += " ";
+                            clientName += appointmentQuery.Select(x => x.LastName).First().Trim();
+                        }
+
+                        newEvent.Client = clientName;
+
+                        string employee = appointmentQuery.Select(x => x.Employee).FirstOrDefault().ToLower().Trim();
+                        if (string.IsNullOrEmpty(employee))
+                        {
+                            employee = ((NaNStaff.Employees)0).ToString().ToLower();
+                        }
+
+                        switch (employee.ToLower())
+                        {
+                            case "lyshaie white":
+                                newEvent.StaffMember = NaNStaff.Employees.LYSHAIE;
+                                break;
+                            case "emma lee":
+                                newEvent.StaffMember = NaNStaff.Employees.EMMA;
+                                break;
+                            default:
+                                newEvent.StaffMember = NaNStaff.Employees.KOULA;
+                                break;
+                        }
+
+                        DateTime appStart = appointmentQuery.Min(x => x.StartDate);
+                        DateTime appStartTime = appointmentQuery.Min(x => x.StartTime);
+                        DateTime appEnd = appointmentQuery.Max(x => x.EndDate);
+                        DateTime appEndTime = appointmentQuery.Max(x => x.EndTime);
+
+                        newEvent.StartTime = DateTime.Parse(appStart.ToShortDateString() + " " + appStartTime.TimeOfDay);
+                        newEvent.EndTime = DateTime.Parse(appEnd.ToShortDateString() + " " + appEndTime.TimeOfDay);
+
+                        newEvent.DurationMinutes = (newEvent.EndTime - newEvent.StartTime).TotalMinutes;
+
+                        ticketEvents.Add(newEvent);
+                    }
+                }
+                catch (Exception e)
                 {
-                    GCalEventItem newEvent = new GCalEventItem();
-
-                    var appointmentQuery = from ticket in tickets.AsEnumerable()
-                    where ticket.Field<int>("id") == ticketID
-                    select new
-                    {
-                        TicketId = ticket.Field<int>("id"),
-                        ClientId = ticket.Field<int>("clientId"),
-                        FirstName = ticket.Field<string>("clientFirstName"),
-                        LastName = ticket.Field<string>("clientLastName"),
-                        Employee = ticket.Field<string>("staff"),
-                        StartDate = ticket.Field<DateTime>("startDate"),
-                        EndDate = ticket.Field<DateTime>("endDate"),
-                        StartTime = ticket.Field<DateTime>("startTime"),
-                        EndTime = ticket.Field<DateTime>("endTime"),
-                        ServiceDescription = ticket.Field<string>("serviceDescription")
-                    };
-
-                    newEvent.SalonCalendarId = ticketID;
-
-                    newEvent.AppointmentType = appointmentQuery.Select(x => x.ServiceDescription).First();
-                    string clientName = appointmentQuery.Select(x => x.FirstName).First().Trim();
-                    if (!string.IsNullOrEmpty(appointmentQuery.Select(x => x.LastName).First()))
-                    {
-                        clientName += " ";
-                        clientName += appointmentQuery.Select(x => x.LastName).First().Trim();
-                    }
-
-                    newEvent.Client = clientName;
-
-                    string employee = appointmentQuery.Select(x => x.Employee).FirstOrDefault().ToLower().Trim();
-                    if (string.IsNullOrEmpty(employee))
-                    {
-                        employee = ((NaNStaff.Employees)0).ToString().ToLower();
-                    }
-
-                    switch (employee.ToLower())
-                    {
-                        case "lyshaie white":
-                            newEvent.StaffMember = NaNStaff.Employees.LYSHAIE;
-                            break;
-                        case "emma lee":
-                            newEvent.StaffMember = NaNStaff.Employees.EMMA;
-                            break;
-                        default:
-                            newEvent.StaffMember = NaNStaff.Employees.KOULA;
-                            break;
-                    }
-
-                    DateTime appStart = appointmentQuery.Min(x => x.StartDate);
-                    DateTime appStartTime = appointmentQuery.Min(x => x.StartTime);
-                    DateTime appEnd = appointmentQuery.Max(x => x.EndDate);
-                    DateTime appEndTime = appointmentQuery.Max(x => x.EndTime);
-
-                    newEvent.StartTime = DateTime.Parse(appStart.ToShortDateString() + " " + appStartTime.TimeOfDay);
-                    newEvent.EndTime = DateTime.Parse(appEnd.ToShortDateString() + " " + appEndTime.TimeOfDay);
-
-                    newEvent.DurationMinutes = (newEvent.EndTime - newEvent.StartTime).TotalMinutes;
-
-                    ticketEvents.Add(newEvent);
+                log.Error("Error in SQL Read : " + e.Message);
                 }
             }
             else

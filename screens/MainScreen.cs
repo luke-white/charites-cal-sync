@@ -45,7 +45,7 @@ namespace itdevgeek_charites
         /// <param name="updatedText">text to add to the status</param>
         public void UpdateStatusText(string updatedText)
         {
-            sbpanelAppStatus.Text = updatedText.Trim();
+            //this.sbpanelAppStatus.Text = updatedText.Trim();
         }
 
         /// <summary>

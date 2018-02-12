@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Salon_Calendar_Integration" GeneratedClassName="AppConfiguration">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="itdevgeek_charites" GeneratedClassName="AppConfiguration">
   <Profiles />
   <Settings>
     <Setting Name="email_address" Type="System.String" Scope="User">
@@ -12,7 +12,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="dbConnectionString" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=NUTSABOUTNAILS;Initial Catalog=SalonIris;Integrated Security=SSPI;</Value>
+      <Value Profile="(Default)">Data Source=NAN-TABLET;Initial Catalog=SalonIris;Integrated Security=SSPI;</Value>
     </Setting>
     <Setting Name="run_in_background" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

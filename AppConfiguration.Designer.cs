@@ -61,7 +61,7 @@ namespace itdevgeek_charites {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NUTSABOUTNAILS;Initial Catalog=SalonIris;Integrated Security=SSPI;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NAN-TABLET;Initial Catalog=SalonIris;Integrated Security=SSPI;")]
         public string dbConnectionString {
             get {
                 return ((string)(this["dbConnectionString"]));
