@@ -61,7 +61,8 @@ namespace itdevgeek_charites {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NAN-TABLET;Initial Catalog=SalonIris;Integrated Security=SSPI;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NAN-TABLET;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min Poo" +
+            "l Size = 0;Max Pool Size=200")]
         public string dbConnectionString {
             get {
                 return ((string)(this["dbConnectionString"]));

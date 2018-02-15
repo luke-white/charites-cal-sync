@@ -12,7 +12,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="dbConnectionString" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=NAN-TABLET;Initial Catalog=SalonIris;Integrated Security=SSPI;</Value>
+      <Value Profile="(Default)">Data Source=NAN-TABLET;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min Pool Size = 0;Max Pool Size=200</Value>
     </Setting>
     <Setting Name="run_in_background" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

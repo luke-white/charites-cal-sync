@@ -35,6 +35,7 @@ namespace itdevgeek_charites.helper.sql
             ds = new DataSet();
             try
             {
+                AppConfiguration.Default.Reload();
                 string connectionString = AppConfiguration.Default.dbConnectionString;
 
                 if (string.IsNullOrEmpty(connectionString))
@@ -51,8 +52,7 @@ namespace itdevgeek_charites.helper.sql
                     "FROM SalonIris.dbo.tblTicketsSummary s, SalonIris.dbo.tblTicketsRow r " +
                     "WHERE " +
                         "s.fldTicketID = r.fldTicketID " +
-                        "AND r.fldID <> '.CR' " +
-                        "AND r.fldID <> '.CA' " +
+                        "AND r.fldID NOT LIKE '.C%' " +
                         "AND DATEPART(YEAR, r.fldStartDate) = @year " +
                         "AND DATEPART(YEAR, r.fldEndDate) = @year " +
                     "ORDER BY r.fldStartDate, r.fldStartTime",
@@ -158,7 +158,7 @@ namespace itdevgeek_charites.helper.sql
                 }
                 catch (Exception e)
                 {
-                log.Error("Error in SQL Read : " + e.Message);
+                    log.Error("Error in SQL Read : " + e.Message);
                 }
             }
             else

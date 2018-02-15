@@ -240,87 +240,100 @@ namespace itdevgeek_charites
                 // Load Values From Salon Calendar
                 DBHelper.InitData(_calendarYear.Year);
                 List<GCalEventItem> currentSalonEvents = DBHelper.ConvertSQLTicketsToEvents();
-
-                // get New Events to create
-                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
+                if (currentSalonEvents != null && currentSalonEvents.Count > 0)
                 {
-                    newEvents = (List<GCalEventItem>)currentSalonEvents.Except(currentGoogEvents).ToList();
-                }
-                else
-                {
-                    newEvents = currentSalonEvents;
-                }
-
-                // get events that need to delete
-                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
-                {
-                    deletedEvents = (List<GCalEventItem>)currentGoogEvents.Except(currentSalonEvents).ToList();
-                }
-                else
-                {
-                    deletedEvents = new List<GCalEventItem>();
-                }
-
-                // get Events that need to update
-                if (currentGoogEvents != null && currentGoogEvents.Count > 0)
-                {
-                    List<GCalEventItem> potentialUpdatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(newEvents).ToList();
-                    foreach (GCalEventItem e in potentialUpdatedEvents)
+                    // get New Events to create
+                    if (currentGoogEvents != null && currentGoogEvents.Count > 0)
                     {
-                        GCalEventItem ge = currentGoogEvents.Find(x => x.SalonCalendarId == e.SalonCalendarId);
-                        if (ge != null)
-                        {
-                            e.EventId = ge.EventId;
-                        }
+                        newEvents = (List<GCalEventItem>)currentSalonEvents.Except(currentGoogEvents).ToList();
+                    }
+                    else
+                    {
+                        newEvents = currentSalonEvents;
                     }
 
-                    List<GCalEventItem> noGoogleIdEvents = potentialUpdatedEvents.FindAll(x => x.EventId == null).ToList();
-                    if (noGoogleIdEvents != null && noGoogleIdEvents.Count > 0)
+                    // get events that need to delete
+                    if (currentGoogEvents != null && currentGoogEvents.Count > 0)
                     {
-                        newEvents = (List<GCalEventItem>)newEvents.Concat(noGoogleIdEvents.Except(newEvents)).ToList();
-                        potentialUpdatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(noGoogleIdEvents).ToList();
+                        deletedEvents = (List<GCalEventItem>)currentGoogEvents.Except(currentSalonEvents).ToList();
+                    }
+                    else
+                    {
+                        deletedEvents = new List<GCalEventItem>();
                     }
 
-                    List<GCalEventItem> unchangedEvents = new List<GCalEventItem>();
-                    foreach (var ev in potentialUpdatedEvents)
+                    // get Events that need to update
+                    if (currentGoogEvents != null && currentGoogEvents.Count > 0)
                     {
-                        var entryToCheck = currentGoogEvents.FirstOrDefault(x => x.SalonCalendarId == ev.SalonCalendarId);
-                        if (entryToCheck != null)
+                        List<GCalEventItem> potentialUpdatedEvents = (List<GCalEventItem>)currentSalonEvents.Except(newEvents).ToList();
+                        foreach (GCalEventItem e in potentialUpdatedEvents)
                         {
-                            if (entryToCheck.AppointmentType != ev.AppointmentType ||
-                                entryToCheck.Client != ev.Client ||
-                                entryToCheck.StaffMember != ev.StaffMember ||
-                                entryToCheck.StartTime != ev.StartTime ||
-                                entryToCheck.EndTime != ev.EndTime ||
-                                entryToCheck.DurationMinutes != ev.DurationMinutes)
+                            GCalEventItem ge = currentGoogEvents.Find(x => x.SalonCalendarId == e.SalonCalendarId);
+                            if (ge != null)
                             {
-                                // need to update so leave in list
-                                log.Debug("Need to update event ->" + entryToCheck.SalonCalendarId);
-                            }
-                            else
-                            {
-                                unchangedEvents.Add(entryToCheck);
+                                e.EventId = ge.EventId;
                             }
                         }
+
+                        List<GCalEventItem> noGoogleIdEvents = potentialUpdatedEvents.FindAll(x => x.EventId == null).ToList();
+                        if (noGoogleIdEvents != null && noGoogleIdEvents.Count > 0)
+                        {
+                            newEvents = (List<GCalEventItem>)newEvents.Concat(noGoogleIdEvents.Except(newEvents)).ToList();
+                            potentialUpdatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(noGoogleIdEvents).ToList();
+                        }
+
+                        List<GCalEventItem> unchangedEvents = new List<GCalEventItem>();
+                        foreach (var ev in potentialUpdatedEvents)
+                        {
+                            var entryToCheck = currentGoogEvents.FirstOrDefault(x => x.SalonCalendarId == ev.SalonCalendarId);
+                            if (entryToCheck != null)
+                            {
+                                if (entryToCheck.AppointmentType != ev.AppointmentType ||
+                                    entryToCheck.Client != ev.Client ||
+                                    entryToCheck.StaffMember != ev.StaffMember ||
+                                    entryToCheck.StartTime != ev.StartTime ||
+                                    entryToCheck.EndTime != ev.EndTime ||
+                                    entryToCheck.DurationMinutes != ev.DurationMinutes)
+                                {
+                                    // need to update so leave in list
+                                    log.Debug("Need to update event ->" + entryToCheck.SalonCalendarId);
+                                }
+                                else
+                                {
+                                    unchangedEvents.Add(entryToCheck);
+                                }
+                            }
+                        }
+
+                        updatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(unchangedEvents).ToList();
                     }
-                    
-                    updatedEvents = (List<GCalEventItem>)potentialUpdatedEvents.Except(unchangedEvents).ToList();
+                    else
+                    {
+                        updatedEvents = new List<GCalEventItem>();
+                    }
+
+                    GCalHelper.UpdateGoogleCalendar(_calendarOwner, _calendarId, newEvents, updatedEvents, deletedEvents);
+
+                    log.Info("Finished the update Process...");
+                    UpdateProgramStatus("Calendar update completed - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt"));
+
+                    // Show tool tip in case application is minimised to tray
+                    mainForm.notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                    mainForm.notifyIcon.BalloonTipTitle = "Update Complete";
+                    mainForm.notifyIcon.BalloonTipText = "Update with latest Salon Appointments complete - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt");
+                    mainForm.notifyIcon.ShowBalloonTip(5000);
                 }
                 else
                 {
-                    updatedEvents = new List<GCalEventItem>();
+                    log.Info("Finished the update Process...");
+                    UpdateProgramStatus("Calendar update error - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt"));
+
+                    // Show tool tip in case application is minimised to tray
+                    mainForm.notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                    mainForm.notifyIcon.BalloonTipTitle = "Update Error";
+                    mainForm.notifyIcon.BalloonTipText = "Could not update with latest Salon Appointments - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt");
+                    mainForm.notifyIcon.ShowBalloonTip(5000);
                 }
-
-                GCalHelper.UpdateGoogleCalendar(_calendarOwner, _calendarId, newEvents, updatedEvents, deletedEvents);
-
-                log.Info("Finished the update Process...");
-                UpdateProgramStatus("Calendar update completed - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt"));
-
-                // Show tool tip in case application is minimised to tray
-                mainForm.notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
-                mainForm.notifyIcon.BalloonTipTitle = "Update Complete";
-                mainForm.notifyIcon.BalloonTipText = "Update with latest Salon Appointments complete - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt");
-                mainForm.notifyIcon.ShowBalloonTip(5000);
             }
             else
             {

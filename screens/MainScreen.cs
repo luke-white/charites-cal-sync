@@ -45,7 +45,9 @@ namespace itdevgeek_charites
         /// <param name="updatedText">text to add to the status</param>
         public void UpdateStatusText(string updatedText)
         {
+            // Update code for new event and async patter to allow updating of ui from threads
             //this.sbpanelAppStatus.Text = updatedText.Trim();
+
         }
 
         /// <summary>
