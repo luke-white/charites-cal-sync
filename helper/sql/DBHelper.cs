@@ -53,13 +53,14 @@ namespace itdevgeek_charites.helper.sql
                     "WHERE " +
                         "s.fldTicketID = r.fldTicketID " +
                         "AND r.fldID NOT LIKE '.C%' " +
-                        "AND DATEPART(YEAR, r.fldStartDate) = @year " +
-                        "AND DATEPART(YEAR, r.fldEndDate) = @year " +
+                        "AND (DATEPART(YEAR, r.fldStartDate) = @year OR DATEPART(YEAR, r.fldStartDate) = @nextyear)" +
+                        "AND (DATEPART(YEAR, r.fldEndDate) = @year OR DATEPART(YEAR, r.fldEndDate) = @nextyear)" +
                     "ORDER BY r.fldStartDate, r.fldStartTime",
                     connectionString);
 
                 // Add table mappings.
                 da.SelectCommand.Parameters.AddWithValue("@year", workingYear);
+                da.SelectCommand.Parameters.AddWithValue("@nextyear", workingYear + 1);
                 da.TableMappings.Add("Table", "Tickets");
 
                 // Fill the DataSet.
@@ -114,17 +115,17 @@ namespace itdevgeek_charites.helper.sql
 
                         newEvent.SalonCalendarId = ticketID;
 
-                        newEvent.AppointmentType = appointmentQuery.Select(x => x.ServiceDescription).First();
-                        string clientName = appointmentQuery.Select(x => x.FirstName).First().Trim();
+                        newEvent.AppointmentType = RemoveSpecialCharacters(appointmentQuery.Select(x => x.ServiceDescription).First());
+                        string clientName = RemoveSpecialCharacters(appointmentQuery.Select(x => x.FirstName).First().Trim());
                         if (!string.IsNullOrEmpty(appointmentQuery.Select(x => x.LastName).First()))
                         {
                             clientName += " ";
-                            clientName += appointmentQuery.Select(x => x.LastName).First().Trim();
+                            clientName += RemoveSpecialCharacters(appointmentQuery.Select(x => x.LastName).First().Trim());
                         }
 
                         newEvent.Client = clientName;
 
-                        string employee = appointmentQuery.Select(x => x.Employee).FirstOrDefault().ToLower().Trim();
+                        string employee = RemoveSpecialCharacters(appointmentQuery.Select(x => x.Employee).FirstOrDefault().ToLower().Trim());
                         if (string.IsNullOrEmpty(employee))
                         {
                             employee = ((NaNStaff.Employees)0).ToString().ToLower();
@@ -134,9 +135,6 @@ namespace itdevgeek_charites.helper.sql
                         {
                             case "lyshaie white":
                                 newEvent.StaffMember = NaNStaff.Employees.LYSHAIE;
-                                break;
-                            case "emma lee":
-                                newEvent.StaffMember = NaNStaff.Employees.EMMA;
                                 break;
                             default:
                                 newEvent.StaffMember = NaNStaff.Employees.KOULA;
@@ -169,6 +167,26 @@ namespace itdevgeek_charites.helper.sql
 
             log.Info("Finished Reading Salon SQL Calendar Data");
             return ticketEvents;
+        }
+
+        public static string RemoveSpecialCharacters(string str)
+        {
+            char[] buffer = new char[str.Length];
+            int idx = 0;
+
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') 
+                    || (c >= 'A' && c <= 'Z')
+                    || (c >= 'a' && c <= 'z') 
+                    || (c == '.') || (c == '_') || (c == ' '))
+                {
+                    buffer[idx] = c;
+                    idx++;
+                }
+            }
+
+            return new string(buffer, 0, idx);
         }
     }
 }

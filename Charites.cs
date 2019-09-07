@@ -12,7 +12,9 @@ namespace itdevgeek_charites
     using System.Runtime.InteropServices;
     using System.Threading;
     using System.Windows.Forms;
-    using CrystalJobScheduler;
+    using Chroniton;
+    using Chroniton.Jobs;
+    using Chroniton.Schedules;
     using itdevgeek_charites.datatypes;
     using itdevgeek_charites.helper.application;
     using itdevgeek_charites.helper.sql;
@@ -44,7 +46,11 @@ namespace itdevgeek_charites
         private static MainScreen mainForm;
 
         /// <summary>Background job scheduler</summary>
-        private static JobScheduler backgroundUpdateScheduler;
+        private static ISingularity backgroundUpdateScheduler;
+
+        private static SimpleJob backgroundUpdateJob;
+
+        private static IScheduledJob scheduledUpdateJob;
 
         /// <summary>Gets or sets run in background setting</summary>
         public static bool _runInBackground { get; set; }
@@ -87,10 +93,6 @@ namespace itdevgeek_charites
                 if (_runInBackground)
                 {
                     SetUpBackgroundJob();
-                    if (backgroundUpdateScheduler != null)
-                    {
-                        backgroundUpdateScheduler.Start();
-                    }
                 }
 
                 // Initialize and show splashscreen.
@@ -128,6 +130,11 @@ namespace itdevgeek_charites
             // Show the splash screen
             splashScreen.Show();
             System.Threading.Thread.Sleep(1000);   // Pause for a second to show splash
+
+            if (_runInBackground)
+            {
+                EndBackgroundJob();
+            }
 
             if (Application.MessageLoop)
             {
@@ -375,19 +382,11 @@ namespace itdevgeek_charites
         {
             if (!_runInBackground)
             {
-                if (backgroundUpdateScheduler != null)
-                {
-                    backgroundUpdateScheduler.Stop();
-                    backgroundUpdateScheduler = null;
-                }
+                EndBackgroundJob();
             }
             else
             {
                 SetUpBackgroundJob();
-                if (backgroundUpdateScheduler != null)
-                {
-                    backgroundUpdateScheduler.Start();
-                }
             }
         }
 
@@ -396,15 +395,51 @@ namespace itdevgeek_charites
         /// </summary>
         private static void SetUpBackgroundJob()
         {
-            if (backgroundUpdateScheduler != null)
+            if (backgroundUpdateScheduler == null)
             {
+                ISingularityFactory factory = new SingularityFactory();
+                backgroundUpdateScheduler = factory.GetSingularity();
+            }
+
+            if (backgroundUpdateJob == null)
+            {
+                backgroundUpdateJob = new SimpleJob(scheduledTime => UpdateGoogleCalendar());
+            }
+
+            if (scheduledUpdateJob != null)
+            {
+                backgroundUpdateScheduler.StopScheduledJob(scheduledUpdateJob);
+                scheduledUpdateJob = null;
                 backgroundUpdateScheduler.Stop();
-                backgroundUpdateScheduler = null;
             }
 
             if (_runInMinutes > 0)
             {
-                backgroundUpdateScheduler = new JobScheduler(TimeSpan.FromMinutes(_runInMinutes), () => { UpdateGoogleCalendar(); });
+                var schedule = new EveryXTimeSchedule(TimeSpan.FromMinutes(_runInMinutes));
+                scheduledUpdateJob = backgroundUpdateScheduler.ScheduleJob(schedule, backgroundUpdateJob, true);
+            }
+
+            backgroundUpdateScheduler.Start();
+        }
+
+        /// <summary>
+        /// Stops the background scheduler that updates the calendar in the background
+        /// </summary>
+        private static void EndBackgroundJob()
+        {
+            if (scheduledUpdateJob != null)
+            {
+                if (backgroundUpdateScheduler != null)
+                {
+                    backgroundUpdateScheduler.StopScheduledJob(scheduledUpdateJob);
+                }
+                scheduledUpdateJob = null;
+            }
+
+            if (backgroundUpdateScheduler != null)
+            {
+                backgroundUpdateScheduler.Stop();
+                backgroundUpdateScheduler = null;
             }
         }
 

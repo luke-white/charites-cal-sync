@@ -51,7 +51,7 @@ namespace itdevgeek_charites
             // btnExit
             // 
             this.btnExit.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnExit.IconChar = FontAwesome.Sharp.IconChar.SignOut;
+            this.btnExit.IconChar = FontAwesome.Sharp.IconChar.SignOutAlt;
             this.btnExit.IconColor = System.Drawing.Color.Black;
             this.btnExit.IconSize = 25;
             this.btnExit.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
