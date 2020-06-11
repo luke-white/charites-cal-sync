@@ -349,7 +349,10 @@ namespace itdevgeek_charites.helper.sql
             return clientNames;
         }
 
-
+        /// <summary>
+        /// Get and return the latest appointment/ticket id from Salon Iris Database
+        /// </summary>
+        /// <returns>The last Appointment ID from the Salon Iris DB</returns>
         public static int GetLastAppintmentID()
         {
             log.Info("Starting Reading of Salon SQL Appointment ID Data");
@@ -406,6 +409,11 @@ namespace itdevgeek_charites.helper.sql
             return lastAppointmentID;
         }
 
+        /// <summary>
+        /// Remove the special characters from text that cannot be used in Google Calendar
+        /// </summary>
+        /// <param name="str">Text to remove characters from</param>
+        /// <returns>Test without special characters included</returns>
         public static string RemoveSpecialCharacters(string str)
         {
             char[] buffer = new char[str.Length];

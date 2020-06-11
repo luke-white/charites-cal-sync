@@ -12,7 +12,6 @@ namespace itdevgeek_charites.helper.ics
     using Ical.Net;
     using Ical.Net.CalendarComponents;
     using itdevgeek_charites.datatypes;
-    using itdevgeek_charites.helper.sql;
 
     /// <summary>
     /// ICS Calendar File Helper to get appointments from an exported Google Calendar

@@ -1,30 +1,42 @@
-﻿using itdevgeek_charites.datatypes;
-using itdevgeek_charites.helper.sql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
+﻿// -----------------------------------------------------
+// <copyright file="ICSCalEventItem.cs" company="IT Dev Geek">
+//     IT Dev Geek. All rights reserved.
+// </copyright>
+// <author>Luke White</author>
+// -----------------------------------------------------
 namespace itdevgeek_charites.helper.import
 {
+    using itdevgeek_charites.datatypes;
+    using itdevgeek_charites.helper.sql;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    /// <summary>
+    /// Import Helper Class
+    /// Provides helper methods to convert and import ICS events to Salon Iris appointments
+    /// </summary>
     class ImportHelper
     {
-
         /// <summary>class logger</summary>
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>The list of appointments with data needed to import into Salon Iris DB</summary>
         private static List<SalonIrisAppointmentItem> importAppointmentList { get; set; }
 
+        /// <summary>The total number of appointments with Koula in the import data</summary>
         public static int koulaAppointments { get; set; }
 
+        /// <summary>The total number of appointments with Lyshaie in the import data</summary>
         public static int lyshaieAppointments { get; set; }
 
+        /// <summary>The total number of appointments in the data ready to import</summary>
         public static int totalAppointments { get; set; }
 
+        /// <summary>The total number of unique clients with appointments in the data ready for import</summary>
         public static int totalClients { get; set; }
 
+        /// <summary>The current client list to used for matching events with</summary>
         private static Dictionary<int, string> clientList;
 
         /// <summary>
@@ -79,10 +91,9 @@ namespace itdevgeek_charites.helper.import
 
                     appointment.ClientID = clientID;
                     appointment.ClientFirstName = clientFirstname;
-                    appointment.ClientEndName = clientLastname;
+                    appointment.ClientLastName = clientLastname;
 
                     // Get start and end times and dates in Salon Iris formatted SQL dates
-                    //string startDateString = String.Format("{0:yyyy-MM-dd}", icsStartTime);
                     string startDateString = icsStartTime.ToString("yyyy-MM-dd") + " 00:00:00";
                     string startDateTimeString = icsStartTime.ToString("yyy-MM-dd HH:mm:ss");
                     string startTimeString = "1899-12-30 " + icsStartTime.ToString("HH:mm:ss");
@@ -91,6 +102,7 @@ namespace itdevgeek_charites.helper.import
                     string endDateTimeString = icsEndTime.ToString("yyy-MM-dd HH:mm:ss");
                     string endTimeString = "1899-12-30 " + icsEndTime.ToString("HH:mm:ss");
 
+                    // set the data for the appointment
                     appointment.DateScheduled = startDateString;
                     appointment.DurationMinutes = icsEventDuration;
 
@@ -105,20 +117,23 @@ namespace itdevgeek_charites.helper.import
                     appointment.StaffID = NaNStaff.GetStaffID(staffMember);
                     appointment.StaffName = NaNStaff.GetStaffFullName(staffMember);
 
+                    // set the default service details for the appointment
+                    // TODO: Update this to come from cofig/fields
                     appointment.ServiceID = "TR";
                     appointment.ServiceName = "Tip Rebalance";
                     appointment.ServiceCategory = "Acrylic Nails";
 
                     DateTime ticketDateTime = DateTime.Now;
-                    appointment.TickedDateCreated = ticketDateTime.ToString("yyy-MM-dd") + "00:00:00";
-                    appointment.TickedEditDateTime = ticketDateTime.ToString("yyy-MM-dd HH:mm:ss"); ;
-                    appointment.TickedTimeCreated = "1899-12-30 " + ticketDateTime.ToString("HH:mm:ss");
+                    appointment.TicketDateCreated = ticketDateTime.ToString("yyy-MM-dd") + "00:00:00";
+                    appointment.TicketEditDateTime = ticketDateTime.ToString("yyy-MM-dd HH:mm:ss"); ;
+                    appointment.TicketTimeCreated = "1899-12-30 " + ticketDateTime.ToString("HH:mm:ss");
 
-                    appointment.TickedID = lastAppointmentID + 1;
+                    // set the ticket id to the next id based off last id number
+                    appointment.TicketID = lastAppointmentID + 1;
 
                     importAppointmentList.Add(appointment);
                     
-
+                    // update running totals for the appointment data values
                     appointmentCount++;
                     if (staffMember == NaNStaff.Employees.KOULA)
                     {
@@ -134,6 +149,7 @@ namespace itdevgeek_charites.helper.import
                     }
                 }
 
+                // update overall totals for the parsed ics events
                 totalAppointments = appointmentCount;
                 totalClients = clientIDList.Count;
                 koulaAppointments = koulaCount;
@@ -141,10 +157,10 @@ namespace itdevgeek_charites.helper.import
             }
             catch (Exception e)
             {
-                log.Error("Error in XXX : " + e.Message);
+                log.Error("Error in conversion of ICS events to Salon Iris appointments : " + e.Message);
             }
 
-            log.Info("Finished XXX");
+            log.Info("Finished  conversion of ICS events to Salon Iris appointments");
         }
 
     }

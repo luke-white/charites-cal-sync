@@ -6,8 +6,6 @@
 // -----------------------------------------------------
 namespace itdevgeek_charites.datatypes
 {
-    using System;
-
     /// <summary>
     /// Salon Iris Appointment Data Object
     /// Represents the salon appointment to be imported into the Salon Iris DB
@@ -15,63 +13,64 @@ namespace itdevgeek_charites.datatypes
     public class SalonIrisAppointmentItem
     {
         /// <summary>Gets or sets Ticket ID for the appointment</summary>
-        public int TickedID { get; set; }
+        public int TicketID { get; set; }
 
         /// <summary>Gets or sets Client ID for the appointment</summary>
         public int ClientID { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets client first name</summary>
         public string ClientFirstName { get; set; }
 
-        /// <summary>Gets or sets</summary>
-        public string ClientEndName { get; set; }
+        /// <summary>Gets or setsclient last name</summary>
+        public string ClientLastName { get; set; }
 
         /// <summary>Gets or sets Staff ID who the appointment is booked with</summary>
         public int StaffID { get; set; }
 
+        /// <summary>Gets or sets the Staff member's name</summary>
         public string StaffName { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets the appointment start date</summary>
         public string StartDate { get; set; }
 
-        /// <summary>Gets or sets Appointment start time</summary>
+        /// <summary>Gets or sets appointment start time</summary>
         public string StartTime { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets the appointment start date and time</summary>
         public string StartDateTime { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets the appointment end date</summary>
         public string EndDate { get; set; }
 
         /// <summary>Gets or sets Appointment end time</summary>
         public string EndTime { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets the appointment end date and time</summary>
         public string EndDateTime { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets the appointment scheduled date</summary>
         public string DateScheduled { get; set; }
 
         /// <summary>Gets or sets Appointment duration in minutes</summary>
         public double DurationMinutes { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets the appointment service id</summary>
         public string ServiceID { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or sets the appointment service name</summary>
         public string ServiceName { get; set; }
 
-        /// <summary>Gets or sets</summary>
+        /// <summary>Gets or setsthe appointment service category</summary>
         public string ServiceCategory { get; set; }
 
-        /// <summary>Gets or sets</summary>
-        public string TickedEditDateTime { get; set; }
+        /// <summary>Gets or sets the appointment last edit date</summary>
+        public string TicketEditDateTime { get; set; }
 
-        /// <summary>Gets or sets</summary>
-        public string TickedDateCreated { get; set; }
+        /// <summary>Gets or sets the appointment creation date</summary>
+        public string TicketDateCreated { get; set; }
 
-        /// <summary>Gets or sets</summary>
-        public string TickedTimeCreated { get; set; }
+        /// <summary>Gets or sets the appointment creation time</summary>
+        public string TicketTimeCreated { get; set; }
 
 
         /// <summary>
