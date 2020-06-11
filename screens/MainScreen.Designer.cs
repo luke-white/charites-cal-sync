@@ -44,6 +44,7 @@ namespace itdevgeek_charites
             this.sbpanelDateTime = new System.Windows.Forms.StatusBarPanel();
             this.btnSettings = new FontAwesome.Sharp.IconButton();
             this.rtxtAppInfo = new System.Windows.Forms.RichTextBox();
+            this.btnImport = new FontAwesome.Sharp.IconButton();
             ((System.ComponentModel.ISupportInitialize)(this.sbpanelAppStatus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sbpanelDateTime)).BeginInit();
             this.SuspendLayout();
@@ -55,7 +56,7 @@ namespace itdevgeek_charites
             this.btnExit.IconColor = System.Drawing.Color.Black;
             this.btnExit.IconSize = 25;
             this.btnExit.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.btnExit.Location = new System.Drawing.Point(492, 224);
+            this.btnExit.Location = new System.Drawing.Point(492, 283);
             this.btnExit.Name = "btnExit";
             this.btnExit.Rotation = 0D;
             this.btnExit.Size = new System.Drawing.Size(80, 50);
@@ -138,11 +139,29 @@ namespace itdevgeek_charites
             this.rtxtAppInfo.TabStop = false;
             this.rtxtAppInfo.Text = resources.GetString("rtxtAppInfo.Text");
             // 
+            // btnImport
+            // 
+            this.btnImport.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+            this.btnImport.IconChar = FontAwesome.Sharp.IconChar.Download;
+            this.btnImport.IconColor = System.Drawing.Color.Black;
+            this.btnImport.IconSize = 25;
+            this.btnImport.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnImport.Location = new System.Drawing.Point(492, 63);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Rotation = 0D;
+            this.btnImport.Size = new System.Drawing.Size(80, 45);
+            this.btnImport.TabIndex = 13;
+            this.btnImport.Text = "&Import";
+            this.btnImport.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            // 
             // MainScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 361);
+            this.Controls.Add(this.btnImport);
             this.Controls.Add(this.rtxtAppInfo);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.statusBar);
@@ -167,6 +186,7 @@ namespace itdevgeek_charites
         protected System.Windows.Forms.StatusBarPanel sbpanelAppStatus;
         protected System.Windows.Forms.StatusBarPanel sbpanelDateTime;
         public System.Windows.Forms.NotifyIcon notifyIcon;
+        private FontAwesome.Sharp.IconButton btnImport;
     }
 }
 

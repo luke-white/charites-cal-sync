@@ -12,7 +12,7 @@ namespace itdevgeek_charites {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
     internal sealed partial class AppConfiguration : global::System.Configuration.ApplicationSettingsBase {
         
         private static AppConfiguration defaultInstance = ((AppConfiguration)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new AppConfiguration())));
@@ -61,8 +61,8 @@ namespace itdevgeek_charites {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=127.0.0.1;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min Pool" +
-            " Size = 0;Max Pool Size=200")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=REAPER\\DSI;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min Poo" +
+            "l Size = 0;Max Pool Size=200")]
         public string dbConnectionString {
             get {
                 return ((string)(this["dbConnectionString"]));

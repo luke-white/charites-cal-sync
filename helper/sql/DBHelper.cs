@@ -169,6 +169,243 @@ namespace itdevgeek_charites.helper.sql
             return ticketEvents;
         }
 
+        /// <summary>
+        /// Get the Client List from the Salon DB
+        /// </summary>
+        /// <returns>Dictionary with clientid and  client name</returns>
+        public static Dictionary<int, string> GetClientsInSystem()
+        {
+            log.Info("Starting Reading of Salon SQL Client Data");
+
+            Dictionary<int, string> clientList = new Dictionary<int, string>();
+            DataSet clientDS = new DataSet();
+            try
+            {
+                AppConfiguration.Default.Reload();
+                string connectionString = AppConfiguration.Default.dbConnectionString;
+
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString = "Data Source=localhost;Initial Catalog=SalonIris;Integrated Security=SSPI;";
+                }
+
+                // Create a new adapter and give it a query to fetch
+                SqlDataAdapter clientDA = new SqlDataAdapter(
+                    "SELECT " +
+                        "c.fldClientID as 'id', c.fldFirstName as 'clientFirstName', c.fldLastName as 'clientLastName' " +
+                    "FROM SalonIris.dbo.tblClients c " +
+                    "ORDER BY c.fldClientID",
+                    connectionString);
+
+                // Add table mappings.
+                clientDA.TableMappings.Add("Client", "Clients");
+
+                // Fill the DataSet.
+                clientDA.Fill(clientDS);
+            }
+            catch (SqlException ex)
+            {
+                log.Error("SQL exception occurred: " + ex.Message);
+            }
+            
+            if (clientDS != null && clientDS.Tables.Count > 0)
+            {
+                try
+                {
+                    DataTable clients = clientDS.Tables["Clients"];
+
+                    var clientQuery = from client in clients.AsEnumerable()
+                                      select new
+                                      {
+                                          ClientId = client.Field<int>("id"),
+                                          FirstName = client.Field<string>("clientFirstName"),
+                                          LastName = client.Field<string>("clientLastName")
+                                      };
+
+                    var clientResults = clientQuery.Select(x => x).ToList();
+
+                    foreach (var clientDetails in clientResults)
+                    {
+                        if (clientDetails.ClientId > 0)
+                        {
+                            int id = clientDetails.ClientId;
+                            string clientName = "";
+                            if (!string.IsNullOrEmpty(clientDetails.FirstName))
+                            {
+                                clientName += RemoveSpecialCharacters(clientDetails.FirstName);
+                            }
+                            if (!string.IsNullOrEmpty(clientDetails.LastName))
+                            {
+                                clientName += " " + RemoveSpecialCharacters(clientDetails.LastName);
+                            }
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    log.Error("Error in SQL Read : " + e.Message);
+                }
+            }
+            else
+            {
+                // Error have not initialized Data
+                log.Error("ERROR: Reading of SQL Data attempted before initialisation has been performed.");
+            }
+
+            log.Info("Finished Reading Salon SQL Client Data");
+            return clientList;
+
+        }
+
+        /// <summary>
+        /// Get the Client's name from the system based off the provided Client ID
+        /// </summary>
+        /// <param name="clientID">Client ID</param>
+        /// <returns>Firstname and Lastname in an array</returns>
+        public static string[] GetClientDetails(int clientID)
+        {
+            log.Info("Starting Reading of Salon SQL Client Data");
+
+            string[] clientNames = new string[2];
+            DataSet clientDS = new DataSet();
+            try
+            {
+                AppConfiguration.Default.Reload();
+                string connectionString = AppConfiguration.Default.dbConnectionString;
+
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString = "Data Source=localhost;Initial Catalog=SalonIris;Integrated Security=SSPI;";
+                }
+
+                // Create a new adapter and give it a query to fetch
+                SqlDataAdapter clientDA = new SqlDataAdapter(
+                    "SELECT " +
+                        "c.fldClientID as 'id', c.fldFirstName as 'clientFirstName', c.fldLastName as 'clientLastName' " +
+                    "FROM SalonIris.dbo.tblClients c " +
+                    "ORDER BY c.fldClientID",
+                    connectionString);
+
+                // Add table mappings.
+                clientDA.TableMappings.Add("Client", "Clients");
+
+                // Fill the DataSet.
+                clientDA.Fill(clientDS);
+            }
+            catch (SqlException ex)
+            {
+                log.Error("SQL exception occurred: " + ex.Message);
+            }
+
+            if (clientDS != null && clientDS.Tables.Count > 0)
+            {
+                try
+                {
+                    DataTable clients = clientDS.Tables["Clients"];
+
+                    var clientQuery = from client in clients.AsEnumerable()
+                                      where client.Field<int>("id") == clientID 
+                                      select new
+                                      {
+                                          FirstName = client.Field<string>("clientFirstName"),
+                                          LastName = client.Field<string>("clientLastName")
+                                      };
+
+                    string firstname = clientQuery.Select(x => x.FirstName).First();
+                    string lastname = clientQuery.Select(x => x.FirstName).First();
+
+                    if (!string.IsNullOrEmpty(firstname))
+                    {
+                        clientNames[0] = firstname;
+                    }
+                    else
+                    {
+                        clientNames[0] = "";
+                    }
+
+                    if (!string.IsNullOrEmpty(lastname))
+                    {
+                        clientNames[1] = lastname;
+                    }
+                    else
+                    {
+                        clientNames[1] = "";
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    log.Error("Error in SQL Read : " + e.Message);
+                }
+            }
+            else
+            {
+                // Error have not initialized Data
+                log.Error("ERROR: Reading of SQL Data attempted before initialisation has been performed.");
+            }
+
+            log.Info("Finished Reading Salon SQL Client Data");
+            return clientNames;
+        }
+
+
+        public static int GetLastAppintmentID()
+        {
+            log.Info("Starting Reading of Salon SQL Appointment ID Data");
+
+            int lastAppointmentID = -1;
+            
+            DataSet appointmentDS = new DataSet();
+            try
+            {
+                AppConfiguration.Default.Reload();
+                string connectionString = AppConfiguration.Default.dbConnectionString;
+
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString = "Data Source=localhost;Initial Catalog=SalonIris;Integrated Security=SSPI;";
+                }
+
+                // Create a new adapter and give it a query to fetch
+                SqlDataAdapter appointmentDA = new SqlDataAdapter("SELECT t.fldTicketID as 'id' FROM SalonIris.dbo.tblTicketsRow t ", connectionString);
+
+                // Add table mappings.
+                appointmentDA.TableMappings.Add("TicketID", "TicketIDs");
+
+                // Fill the DataSet.
+                appointmentDA.Fill(appointmentDS);
+            }
+            catch (SqlException ex)
+            {
+                log.Error("SQL exception occurred: " + ex.Message);
+            }
+
+            if (appointmentDS != null && appointmentDS.Tables.Count > 0)
+            {
+                try
+                {
+                    DataTable ticketIDs = appointmentDS.Tables["TicketIDs"];
+
+                    int maxValue = (int) ticketIDs.Compute("MAX([id])", ""); //computing the max value
+
+                    lastAppointmentID = maxValue;
+                }
+                catch (Exception e)
+                {
+                    log.Error("Error in SQL Read : " + e.Message);
+                }
+            }
+            else
+            {
+                // Error have not initialized Data
+                log.Error("ERROR: Reading of SQL Data attempted before initialisation has been performed.");
+            }
+
+            log.Info("Finished Reading Salon SQL Appointment ID Data");
+            return lastAppointmentID;
+        }
+
         public static string RemoveSpecialCharacters(string str)
         {
             char[] buffer = new char[str.Length];
