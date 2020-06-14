@@ -54,6 +54,7 @@ namespace itdevgeek_charites.helper.ics
 
                     var startTime = calEntry.DtStart;
                     var duration = calEntry.Duration;
+                    var endTime = calEntry.DtEnd;
 
                     switch (staffMember.ToLower())
                     {
@@ -65,10 +66,16 @@ namespace itdevgeek_charites.helper.ics
                             break;
                     }
 
+                    newEvent.Client = client;
+
                     newEvent.StartTime = startTime.Date;
                     newEvent.StartTime = newEvent.StartTime.Date + new TimeSpan(startTime.Hour, startTime.Minute, 0);
 
                     newEvent.DurationMinutes = duration.TotalMinutes;
+
+                    newEvent.EndTime = endTime.Date;
+                    newEvent.EndTime = newEvent.EndTime.Date + new TimeSpan(endTime.Hour, endTime.Minute, 0);
+
 
                     if (newEvent.StaffMember == NaNStaff.Employees.LYSHAIE)
                     {

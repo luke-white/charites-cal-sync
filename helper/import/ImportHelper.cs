@@ -72,80 +72,87 @@ namespace itdevgeek_charites.helper.import
 
                     // find client name in client list
                     int clientID = clientList.FirstOrDefault(x => x.Value == icsClientName).Key;
-
-                    string[] clientName = DBHelper.GetClientDetails(clientID);
                     string clientFirstname = "";
                     string clientLastname = "";
 
-                    if (clientName != null && clientName.Length == 2)
+                    if (clientID != 0)
                     {
-                        clientFirstname = clientName[0];
-                        clientLastname = clientName[1];
+                        string[] clientName = DBHelper.GetClientDetails(clientID);
+
+                        if (clientName != null && clientName.Length == 2)
+                        {
+                            clientFirstname = clientName[0];
+                            clientLastname = clientName[1];
+                        }
+
+                        NaNStaff.Employees staffMember = icsEvent.StaffMember;
+                        DateTime icsStartTime = icsEvent.StartTime;
+                        DateTime icsEndTime = icsEvent.EndTime;
+
+                        double icsEventDuration = icsEvent.DurationMinutes;
+
+                        appointment.ClientID = clientID;
+                        appointment.ClientFirstName = clientFirstname;
+                        appointment.ClientLastName = clientLastname;
+
+                        // Get start and end times and dates in Salon Iris formatted SQL dates
+                        string startDateString = icsStartTime.ToString("yyyy-MM-dd") + " 00:00:00";
+                        string startDateTimeString = icsStartTime.ToString("yyy-MM-dd HH:mm:ss");
+                        string startTimeString = "1899-12-30 " + icsStartTime.ToString("HH:mm:ss");
+
+                        string endDateString = icsEndTime.ToString("yyyy-MM-dd") + " 00:00:00";
+                        string endDateTimeString = icsEndTime.ToString("yyy-MM-dd HH:mm:ss");
+                        string endTimeString = "1899-12-30 " + icsEndTime.ToString("HH:mm:ss");
+
+                        // set the data for the appointment
+                        appointment.DateScheduled = startDateString;
+                        appointment.DurationMinutes = icsEventDuration;
+
+                        appointment.EndDate = endDateString;
+                        appointment.EndDateTime = endDateTimeString;
+                        appointment.EndTime = endTimeString;
+
+                        appointment.StartDate = startDateString;
+                        appointment.StartDateTime = startDateTimeString;
+                        appointment.StartTime = startTimeString;
+
+                        appointment.StaffID = NaNStaff.GetStaffID(staffMember);
+                        appointment.StaffName = NaNStaff.GetStaffFullName(staffMember);
+
+                        // set the default service details for the appointment
+                        // TODO: Update this to come from cofig/fields
+                        appointment.ServiceID = "TR";
+                        appointment.ServiceName = "Tip Rebalance";
+                        appointment.ServiceCategory = "Acrylic Nails";
+
+                        DateTime ticketDateTime = DateTime.Now;
+                        appointment.TicketDateCreated = ticketDateTime.ToString("yyy-MM-dd") + "00:00:00";
+                        appointment.TicketEditDateTime = ticketDateTime.ToString("yyy-MM-dd HH:mm:ss"); ;
+                        appointment.TicketTimeCreated = "1899-12-30 " + ticketDateTime.ToString("HH:mm:ss");
+
+                        // set the ticket id to the next id based off last id number
+                        appointment.TicketID = lastAppointmentID + 1;
+
+                        importAppointmentList.Add(appointment);
+
+                        // update running totals for the appointment data values
+                        appointmentCount++;
+                        if (staffMember == NaNStaff.Employees.KOULA)
+                        {
+                            koulaCount++;
+                        }
+                        if (staffMember == NaNStaff.Employees.LYSHAIE)
+                        {
+                            lyshaieCount++;
+                        }
+                        if (!clientIDList.Contains(clientID))
+                        {
+                            clientIDList.Add(clientID);
+                        }
                     }
-
-                    NaNStaff.Employees staffMember = icsEvent.StaffMember;
-                    DateTime icsStartTime = icsEvent.StartTime;
-                    DateTime icsEndTime = icsEvent.EndTime;
-
-                    double icsEventDuration = icsEvent.DurationMinutes;
-
-                    appointment.ClientID = clientID;
-                    appointment.ClientFirstName = clientFirstname;
-                    appointment.ClientLastName = clientLastname;
-
-                    // Get start and end times and dates in Salon Iris formatted SQL dates
-                    string startDateString = icsStartTime.ToString("yyyy-MM-dd") + " 00:00:00";
-                    string startDateTimeString = icsStartTime.ToString("yyy-MM-dd HH:mm:ss");
-                    string startTimeString = "1899-12-30 " + icsStartTime.ToString("HH:mm:ss");
-
-                    string endDateString = icsEndTime.ToString("yyyy-MM-dd") + " 00:00:00";
-                    string endDateTimeString = icsEndTime.ToString("yyy-MM-dd HH:mm:ss");
-                    string endTimeString = "1899-12-30 " + icsEndTime.ToString("HH:mm:ss");
-
-                    // set the data for the appointment
-                    appointment.DateScheduled = startDateString;
-                    appointment.DurationMinutes = icsEventDuration;
-
-                    appointment.EndDate = endDateString;
-                    appointment.EndDateTime = endDateTimeString;
-                    appointment.EndTime = endTimeString;
-
-                    appointment.StartDate = startDateString;
-                    appointment.StartDateTime = startDateTimeString;
-                    appointment.StartTime = startTimeString;
-
-                    appointment.StaffID = NaNStaff.GetStaffID(staffMember);
-                    appointment.StaffName = NaNStaff.GetStaffFullName(staffMember);
-
-                    // set the default service details for the appointment
-                    // TODO: Update this to come from cofig/fields
-                    appointment.ServiceID = "TR";
-                    appointment.ServiceName = "Tip Rebalance";
-                    appointment.ServiceCategory = "Acrylic Nails";
-
-                    DateTime ticketDateTime = DateTime.Now;
-                    appointment.TicketDateCreated = ticketDateTime.ToString("yyy-MM-dd") + "00:00:00";
-                    appointment.TicketEditDateTime = ticketDateTime.ToString("yyy-MM-dd HH:mm:ss"); ;
-                    appointment.TicketTimeCreated = "1899-12-30 " + ticketDateTime.ToString("HH:mm:ss");
-
-                    // set the ticket id to the next id based off last id number
-                    appointment.TicketID = lastAppointmentID + 1;
-
-                    importAppointmentList.Add(appointment);
-                    
-                    // update running totals for the appointment data values
-                    appointmentCount++;
-                    if (staffMember == NaNStaff.Employees.KOULA)
+                    else
                     {
-                        koulaCount++;
-                    }
-                    if (staffMember == NaNStaff.Employees.LYSHAIE)
-                    {
-                        lyshaieCount++;
-                    }
-                    if (!clientIDList.Contains(clientID))
-                    {
-                        clientIDList.Add(clientID);
+                        log.Warn("Could not find Client in system for appointment with client name of " + icsClientName);
                     }
                 }
 
@@ -161,6 +168,23 @@ namespace itdevgeek_charites.helper.import
             }
 
             log.Info("Finished  conversion of ICS events to Salon Iris appointments");
+        }
+
+
+        public static void ImportAppointments()
+        {
+            log.Info("Starting Import of appointments to Salon Iris");
+
+            if (importAppointmentList != null && importAppointmentList.Count > 0)
+            {
+                // TODO: DO import
+            }
+            else
+            {
+                log.Error("No appointments to import");
+            }
+
+            log.Info("Finished Import of appointments to Salon Iris");
         }
 
     }

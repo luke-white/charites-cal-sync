@@ -12,7 +12,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="dbConnectionString" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=REAPER\DSI;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min Pool Size = 0;Max Pool Size=200</Value>
+      <Value Profile="(Default)">Data Source=127.0.0.1\DSI;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min Pool Size = 0;Max Pool Size=200</Value>
     </Setting>
     <Setting Name="run_in_background" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

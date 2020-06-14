@@ -141,6 +141,11 @@ namespace itdevgeek_charites.screens
         /// <param name="e">event arguments</param>
         void BgParseWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            txtAppointmentCount.Text = ImportHelper.totalAppointments.ToString();
+            txtClientCount.Text = ImportHelper.totalClients.ToString();
+            txtKoulaAppointmentCount.Text = ImportHelper.koulaAppointments.ToString();
+            txtLyshaieAppointmentCount.Text = ImportHelper.lyshaieAppointments.ToString();
+
             btnOpenICSFile.Enabled = true;
             btnParseICSFile.Enabled = true;
             btnImportCalendar.Enabled = true;
@@ -165,11 +170,6 @@ namespace itdevgeek_charites.screens
         /// <param name="e">event arguments</param>
         void BgImportWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            txtAppointmentCount.Text = ImportHelper.totalAppointments.ToString();
-            txtClientCount.Text = ImportHelper.totalClients.ToString();
-            txtKoulaAppointmentCount.Text = ImportHelper.koulaAppointments.ToString();
-            txtLyshaieAppointmentCount.Text = ImportHelper.lyshaieAppointments.ToString();
-
             btnOpenICSFile.Enabled = true;
             btnParseICSFile.Enabled = true;
             btnImportCalendar.Enabled = true;

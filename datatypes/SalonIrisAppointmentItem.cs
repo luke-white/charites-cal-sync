@@ -87,7 +87,7 @@ namespace itdevgeek_charites.datatypes
             }
 
             SalonIrisAppointmentItem m = (SalonIrisAppointmentItem)obj;
-            return ((this.TickedID == m.TickedID) &&
+            return ((this.TicketID == m.TicketID) &&
                     (this.ClientID == m.ClientID) &&
                     (this.StaffID == m.StaffID) && 
                     (this.StartDateTime == m.StartDateTime));
@@ -101,7 +101,7 @@ namespace itdevgeek_charites.datatypes
         {
             int hash = 13;
 
-            hash = (hash * 7) + TickedID.GetHashCode();
+            hash = (hash * 7) + TicketID.GetHashCode();
             hash = (hash * 7) + ClientID.GetHashCode();
             hash = (hash * 7) + StaffID.GetHashCode();
             hash = (hash * 7) + StartDateTime.GetHashCode();

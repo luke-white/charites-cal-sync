@@ -37,16 +37,14 @@
             this.lblImportCalendar = new System.Windows.Forms.Label();
             this.btnParseICSFile = new System.Windows.Forms.Button();
             this.grpICSSummary = new System.Windows.Forms.GroupBox();
+            this.txtLyshaieAppointmentCount = new System.Windows.Forms.TextBox();
+            this.lblLyshaieAppointmentCount = new System.Windows.Forms.Label();
             this.txtKoulaAppointmentCount = new System.Windows.Forms.TextBox();
             this.txtClientCount = new System.Windows.Forms.TextBox();
             this.txtAppointmentCount = new System.Windows.Forms.TextBox();
             this.lblKoulaAppointmentCount = new System.Windows.Forms.Label();
             this.lblClients = new System.Windows.Forms.Label();
             this.lblAppointments = new System.Windows.Forms.Label();
-            this.lblImportYear = new System.Windows.Forms.Label();
-            this.dpImportYear = new System.Windows.Forms.DateTimePicker();
-            this.txtLyshaieAppointmentCount = new System.Windows.Forms.TextBox();
-            this.lblLyshaieAppointmentCount = new System.Windows.Forms.Label();
             this.grpICSSummary.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -124,16 +122,37 @@
             this.grpICSSummary.Controls.Add(this.lblAppointments);
             this.grpICSSummary.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.grpICSSummary.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grpICSSummary.Location = new System.Drawing.Point(42, 151);
+            this.grpICSSummary.Location = new System.Drawing.Point(42, 140);
             this.grpICSSummary.Name = "grpICSSummary";
             this.grpICSSummary.Size = new System.Drawing.Size(474, 159);
             this.grpICSSummary.TabIndex = 16;
             this.grpICSSummary.TabStop = false;
             this.grpICSSummary.Text = "ICS Summary";
             // 
+            // txtLyshaieAppointmentCount
+            // 
+            this.txtLyshaieAppointmentCount.Enabled = false;
+            this.txtLyshaieAppointmentCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtLyshaieAppointmentCount.Location = new System.Drawing.Point(166, 120);
+            this.txtLyshaieAppointmentCount.Name = "txtLyshaieAppointmentCount";
+            this.txtLyshaieAppointmentCount.ReadOnly = true;
+            this.txtLyshaieAppointmentCount.Size = new System.Drawing.Size(105, 20);
+            this.txtLyshaieAppointmentCount.TabIndex = 3;
+            // 
+            // lblLyshaieAppointmentCount
+            // 
+            this.lblLyshaieAppointmentCount.AutoSize = true;
+            this.lblLyshaieAppointmentCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLyshaieAppointmentCount.Location = new System.Drawing.Point(23, 123);
+            this.lblLyshaieAppointmentCount.Name = "lblLyshaieAppointmentCount";
+            this.lblLyshaieAppointmentCount.Size = new System.Drawing.Size(134, 13);
+            this.lblLyshaieAppointmentCount.TabIndex = 2;
+            this.lblLyshaieAppointmentCount.Text = "Lyshaie Appointments:";
+            // 
             // txtKoulaAppointmentCount
             // 
             this.txtKoulaAppointmentCount.Enabled = false;
+            this.txtKoulaAppointmentCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtKoulaAppointmentCount.Location = new System.Drawing.Point(166, 85);
             this.txtKoulaAppointmentCount.Name = "txtKoulaAppointmentCount";
             this.txtKoulaAppointmentCount.ReadOnly = true;
@@ -143,6 +162,7 @@
             // txtClientCount
             // 
             this.txtClientCount.Enabled = false;
+            this.txtClientCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtClientCount.Location = new System.Drawing.Point(337, 41);
             this.txtClientCount.Name = "txtClientCount";
             this.txtClientCount.ReadOnly = true;
@@ -152,6 +172,7 @@
             // txtAppointmentCount
             // 
             this.txtAppointmentCount.Enabled = false;
+            this.txtAppointmentCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAppointmentCount.Location = new System.Drawing.Point(128, 41);
             this.txtAppointmentCount.Name = "txtAppointmentCount";
             this.txtAppointmentCount.ReadOnly = true;
@@ -188,52 +209,11 @@
             this.lblAppointments.TabIndex = 0;
             this.lblAppointments.Text = "Appointments:";
             // 
-            // lblImportYear
-            // 
-            this.lblImportYear.AutoSize = true;
-            this.lblImportYear.Location = new System.Drawing.Point(39, 103);
-            this.lblImportYear.Name = "lblImportYear";
-            this.lblImportYear.Size = new System.Drawing.Size(80, 13);
-            this.lblImportYear.TabIndex = 21;
-            this.lblImportYear.Text = "Year To Import:";
-            // 
-            // dpImportYear
-            // 
-            this.dpImportYear.CustomFormat = "yyyy";
-            this.dpImportYear.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dpImportYear.Location = new System.Drawing.Point(159, 96);
-            this.dpImportYear.MinDate = new System.DateTime(2017, 1, 1, 0, 0, 0, 0);
-            this.dpImportYear.Name = "dpImportYear";
-            this.dpImportYear.Size = new System.Drawing.Size(67, 20);
-            this.dpImportYear.TabIndex = 20;
-            this.dpImportYear.Value = new System.DateTime(2020, 1, 1, 0, 0, 0, 0);
-            // 
-            // txtLyshaieAppointmentCount
-            // 
-            this.txtLyshaieAppointmentCount.Enabled = false;
-            this.txtLyshaieAppointmentCount.Location = new System.Drawing.Point(166, 120);
-            this.txtLyshaieAppointmentCount.Name = "txtLyshaieAppointmentCount";
-            this.txtLyshaieAppointmentCount.ReadOnly = true;
-            this.txtLyshaieAppointmentCount.Size = new System.Drawing.Size(105, 20);
-            this.txtLyshaieAppointmentCount.TabIndex = 3;
-            // 
-            // lblLyshaieAppointmentCount
-            // 
-            this.lblLyshaieAppointmentCount.AutoSize = true;
-            this.lblLyshaieAppointmentCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLyshaieAppointmentCount.Location = new System.Drawing.Point(23, 123);
-            this.lblLyshaieAppointmentCount.Name = "lblLyshaieAppointmentCount";
-            this.lblLyshaieAppointmentCount.Size = new System.Drawing.Size(134, 13);
-            this.lblLyshaieAppointmentCount.TabIndex = 2;
-            this.lblLyshaieAppointmentCount.Text = "Lyshaie Appointments:";
-            // 
             // ImportScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 361);
-            this.Controls.Add(this.lblImportYear);
-            this.Controls.Add(this.dpImportYear);
             this.Controls.Add(this.grpICSSummary);
             this.Controls.Add(this.btnParseICSFile);
             this.Controls.Add(this.btnOpenICSFile);
@@ -268,8 +248,6 @@
         private System.Windows.Forms.Label lblKoulaAppointmentCount;
         private System.Windows.Forms.Label lblClients;
         private System.Windows.Forms.Label lblAppointments;
-        private System.Windows.Forms.Label lblImportYear;
-        private System.Windows.Forms.DateTimePicker dpImportYear;
         private System.Windows.Forms.TextBox txtLyshaieAppointmentCount;
         private System.Windows.Forms.Label lblLyshaieAppointmentCount;
     }
