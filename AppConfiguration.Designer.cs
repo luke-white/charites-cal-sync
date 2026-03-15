@@ -61,7 +61,7 @@ namespace itdevgeek_charites {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=127.0.0.1\\DSI;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min " +
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=127.0.0.1\\CMJ;Initial Catalog=SalonIris;UID=sa;PASSWORD=passw0rd;Min " +
             "Pool Size = 0;Max Pool Size=200")]
         public string dbConnectionString {
             get {

@@ -9,6 +9,7 @@ namespace itdevgeek_charites
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Google.Apis.Calendar.v3;
     using Google.Apis.Calendar.v3.Data;
@@ -117,7 +118,7 @@ namespace itdevgeek_charites
 
             request.ShowDeleted = false;
             request.SingleEvents = true;
-            request.MaxResults = 2500;
+            request.MaxResults = 1000;
             request.TimeMin = minTime;
             request.TimeMax = maxTime;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
@@ -206,6 +207,7 @@ namespace itdevgeek_charites
             // Response has more pages of events, get the next page for processing
             if (!string.IsNullOrEmpty(events.NextPageToken))
             {
+                Thread.Sleep(50000);
                 GetYearlyEvents(owner, calendarId, updateYear, events.NextPageToken);
             }
 
@@ -241,6 +243,7 @@ namespace itdevgeek_charites
             // If there are more pages of events continue removing next page
             if (!string.IsNullOrEmpty(events.NextPageToken))
             {
+                Thread.Sleep(50000);
                 ClearAllEventsFromCalendar(owner, calendarId, events.NextPageToken);
             }
         }
@@ -343,6 +346,8 @@ namespace itdevgeek_charites
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
 
+                        Thread.Sleep(50000);
+
                         eventCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));
                     }
@@ -426,6 +431,8 @@ namespace itdevgeek_charites
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
 
+                        Thread.Sleep(50000);
+
                         batchCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));
                     }
@@ -493,6 +500,8 @@ namespace itdevgeek_charites
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
 
+                        Thread.Sleep(50000);
+
                         batchCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));
                     }
@@ -544,6 +553,8 @@ namespace itdevgeek_charites
                     {
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
+
+                        Thread.Sleep(50000);
 
                         batchCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));
