@@ -260,7 +260,7 @@ namespace itdevgeek_charites.screens
             this.Controls.Add(this.lblCalendarOwner);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ConfigurationScreen";
-            this.Text = "ConfigurationScreen";
+            this.Text = "Configuration";
             this.Load += new System.EventHandler(this.ConfigurationScreen_Load);
             this.grpRunInBackground.ResumeLayout(false);
             this.grpRunInBackground.PerformLayout();

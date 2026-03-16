@@ -401,11 +401,6 @@ namespace itdevgeek_charites
                 backgroundUpdateScheduler = factory.GetSingularity();
             }
 
-            if (backgroundUpdateJob == null)
-            {
-                backgroundUpdateJob = new SimpleJob(scheduledTime => UpdateGoogleCalendar());
-            }
-
             if (scheduledUpdateJob != null)
             {
                 backgroundUpdateScheduler.StopScheduledJob(scheduledUpdateJob);
@@ -416,7 +411,11 @@ namespace itdevgeek_charites
             if (_runInMinutes > 0)
             {
                 var schedule = new EveryXTimeSchedule(TimeSpan.FromMinutes(_runInMinutes));
-                scheduledUpdateJob = backgroundUpdateScheduler.ScheduleJob(schedule, backgroundUpdateJob, true);
+                if (backgroundUpdateJob == null)
+                {
+                    backgroundUpdateJob = new SimpleJob(scheduledTime => UpdateGoogleCalendar());
+                }
+                scheduledUpdateJob = backgroundUpdateScheduler.ScheduleJob(schedule, backgroundUpdateJob, false);
             }
 
             backgroundUpdateScheduler.Start();

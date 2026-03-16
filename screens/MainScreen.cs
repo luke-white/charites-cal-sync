@@ -20,6 +20,9 @@ namespace itdevgeek_charites
         /// <summary>Application configuration screen</summary>
         private static ConfigurationScreen settingsScreen;
 
+        /// <summary>Application import screen</summary>
+        private static ImportScreen importScreen;
+
         /// <summary>background worker to perform google calendar update when manually initiated</summary>
         private BackgroundWorker backgroundSynchWorker = new BackgroundWorker();
 
@@ -96,6 +99,7 @@ namespace itdevgeek_charites
             {
                 // disable buttons while performing update
                 btnSettings.Enabled = false;
+                btnImport.Enabled = false;
                 btnUpdate.Enabled = false;
                 btnExit.Enabled = false;
 
@@ -136,6 +140,24 @@ namespace itdevgeek_charites
         }
 
         /// <summary>
+        /// Import button operation, load the import screen
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event arguments</param>
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            if (importScreen == null || importScreen.IsDisposed)
+            {
+                importScreen = new ImportScreen();
+            }
+
+            importScreen.TopMost = true;
+            importScreen.StartPosition = FormStartPosition.CenterScreen;
+            importScreen.Show();
+            importScreen.Refresh();
+        }
+
+        /// <summary>
         /// Background worker, work completed, re-enable screen buttons
         /// </summary>
         /// <param name="sender">sender object</param>
@@ -143,6 +165,7 @@ namespace itdevgeek_charites
         void BgSynchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             btnSettings.Enabled = true;
+            btnImport.Enabled = true;
             btnUpdate.Enabled = true;
             btnExit.Enabled = true;
         }
