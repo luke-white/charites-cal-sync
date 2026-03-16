@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------
+// -----------------------------------------------------
 // <copyright file="GAuthHelper.cs" company="IT Dev Geek">
 //     IT Dev Geek. All rights reserved.
 // </copyright>
@@ -47,7 +47,7 @@ namespace itdevgeek_charites
                 credPath = Path.Combine(credPath, ".credentials/salon-calendar-intg.json");
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
+                    GoogleClientSecrets.FromStream(stream).Secrets,
                     googleScopes,
                     owner,
                     CancellationToken.None,

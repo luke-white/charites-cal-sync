@@ -11,11 +11,13 @@ namespace itdevgeek_charites
     using System.Windows.Forms;
     using itdevgeek_charites.helper.application;
     using itdevgeek_charites.screens;
+    using System.Runtime.Versioning;
     using itdevgeek_charites.presenters;
 
     /// <summary>
     /// Main application screen
     /// </summary>
+    [SupportedOSPlatform("windows")]
     public partial class MainScreen : Form, IMainView
     {
         /// <summary>Main Presenter instance for handling business logic</summary>

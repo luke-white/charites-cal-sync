@@ -119,8 +119,8 @@ namespace itdevgeek_charites
             request.ShowDeleted = false;
             request.SingleEvents = true;
             request.MaxResults = 1000;
-            request.TimeMin = minTime;
-            request.TimeMax = maxTime;
+            request.TimeMinDateTimeOffset = minTime;
+            request.TimeMaxDateTimeOffset = maxTime;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
             if (!string.IsNullOrEmpty(pageToken))
             {
@@ -142,13 +142,13 @@ namespace itdevgeek_charites
 
                     entry.EventId = eventItem.Id;
 
-                    string when = eventItem.Start.DateTime.ToString();
+                    string when = eventItem.Start.DateTimeDateTimeOffset?.ToString() ?? eventItem.Start.Date;
                     if (string.IsNullOrEmpty(when))
                     {
                         when = eventItem.Start.Date;
                     }
 
-                    string ending = eventItem.End.DateTime.ToString();
+                    string ending = eventItem.End.DateTimeDateTimeOffset?.ToString() ?? eventItem.End.Date;
                     if (string.IsNullOrEmpty(ending))
                     {
                         ending = eventItem.End.Date;
@@ -301,8 +301,8 @@ namespace itdevgeek_charites
                     string summary = e.StaffMember.ToString() + ": " + e.Client;
 
                     tempEvent.Summary = summary;
-                    tempEvent.Start = new EventDateTime() { DateTime = e.StartTime };
-                    tempEvent.End = new EventDateTime() { DateTime = e.EndTime };
+                    tempEvent.Start = new EventDateTime() { DateTimeDateTimeOffset = e.StartTime };
+                    tempEvent.End = new EventDateTime() { DateTimeDateTimeOffset = e.EndTime };
 
                     RemindersData eventReminders = new RemindersData();
                     List<EventReminder> eventReminder = new List<EventReminder>();
@@ -393,8 +393,8 @@ namespace itdevgeek_charites
                     string summary = e.StaffMember.ToString() + ": " + e.Client;
 
                     tempEvent.Summary = summary;
-                    tempEvent.Start = new EventDateTime() { DateTime = e.StartTime };
-                    tempEvent.End = new EventDateTime() { DateTime = e.EndTime };
+                    tempEvent.Start = new EventDateTime() { DateTimeDateTimeOffset = e.StartTime };
+                    tempEvent.End = new EventDateTime() { DateTimeDateTimeOffset = e.EndTime };
 
                     RemindersData eventReminders = new RemindersData();
                     List<EventReminder> eventReminder = new List<EventReminder>();

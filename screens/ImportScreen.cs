@@ -1,14 +1,16 @@
-﻿using itdevgeek_charites.datatypes;
+using itdevgeek_charites.datatypes;
 using itdevgeek_charites.helper.ics;
 using itdevgeek_charites.helper.import;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 namespace itdevgeek_charites.screens
 {
+    [SupportedOSPlatform("windows")]
     public partial class ImportScreen : Form
     {
         /// <summary>background worker to perform calendar import when manually initiated</summary>

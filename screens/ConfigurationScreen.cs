@@ -8,11 +8,13 @@ namespace itdevgeek_charites.screens
 {
     using System;
     using System.Threading.Tasks;
+    using System.Runtime.Versioning;
     using System.Windows.Forms;
 
     /// <summary>
     /// Configuration / Options screen
     /// </summary>
+    [SupportedOSPlatform("windows")]
     public partial class ConfigurationScreen : Form
     {
         /// <summary>Class logger</summary>
@@ -133,12 +135,12 @@ namespace itdevgeek_charites.screens
             {
                 AppConfiguration.Default.Save();
 
-                Charites._calendarOwner = AppConfiguration.Default.email_address;
-                Charites._calendarId = AppConfiguration.Default.calendar_id;
-                Charites._calendarYear = dpUpdateYear.Value;
+                Charites.CalendarOwner = AppConfiguration.Default.email_address;
+                Charites.CalendarId = AppConfiguration.Default.calendar_id;
+                Charites.CalendarYear = dpUpdateYear.Value;
 
-                Charites._runInBackground = cbAutoUpdateCalendars.Checked;
-                Charites._runInMinutes = AppConfiguration.Default.background_minutes;
+                Charites.RunInBackground = cbAutoUpdateCalendars.Checked;
+                Charites.RunInMinutes = AppConfiguration.Default.background_minutes;
 
                 Charites.UpdatedSettings();
 

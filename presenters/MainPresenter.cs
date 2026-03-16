@@ -5,6 +5,7 @@ namespace itdevgeek_charites.presenters
     using System.Windows.Forms;
     using itdevgeek_charites.helper.application;
     using itdevgeek_charites.screens;
+    using System.Runtime.Versioning;
 
     public interface IMainView
     {
@@ -18,6 +19,7 @@ namespace itdevgeek_charites.presenters
         event EventHandler ExitRequested;
     }
 
+    [SupportedOSPlatform("windows")]
     public class MainPresenter
     {
         private readonly IMainView _view;
