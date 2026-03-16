@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------
+// -----------------------------------------------------
 // <copyright file="MainScreen.cs" company="IT Dev Geek">
 //     IT Dev Geek. All rights reserved.
 // </copyright>
@@ -11,20 +11,20 @@ namespace itdevgeek_charites
     using System.Windows.Forms;
     using itdevgeek_charites.helper.application;
     using itdevgeek_charites.screens;
+    using itdevgeek_charites.presenters;
 
     /// <summary>
     /// Main application screen
     /// </summary>
-    public partial class MainScreen : Form
+    public partial class MainScreen : Form, IMainView
     {
-        /// <summary>Application configuration screen</summary>
-        private static ConfigurationScreen settingsScreen;
+        /// <summary>Main Presenter instance for handling business logic</summary>
+        private MainPresenter _presenter;
 
-        /// <summary>Application import screen</summary>
-        private static ImportScreen importScreen;
-
-        /// <summary>background worker to perform google calendar update when manually initiated</summary>
-        private BackgroundWorker backgroundSynchWorker = new BackgroundWorker();
+        public event EventHandler UpdateRequested;
+        public event EventHandler SettingsRequested;
+        public event EventHandler ImportRequested;
+        public event EventHandler ExitRequested;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainScreen" /> class.
@@ -38,8 +38,8 @@ namespace itdevgeek_charites
 
             sbpanelAppStatus.Text = "Application started. No action yet.";
 
-            this.backgroundSynchWorker.DoWork += new DoWorkEventHandler(this.BgSynchWorker_DoWork);
-            this.backgroundSynchWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.BgSynchWorker_RunWorkerCompleted);
+            // Initialize presenter
+            _presenter = new MainPresenter(this);
         }
 
         /// <summary>
@@ -48,9 +48,30 @@ namespace itdevgeek_charites
         /// <param name="updatedText">text to add to the status</param>
         public void UpdateStatusText(string updatedText)
         {
-            // Update code for new event and async patter to allow updating of ui from threads
-            //this.sbpanelAppStatus.Text = updatedText.Trim();
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action<string>(UpdateStatusText), new object[] { updatedText });
+                return;
+            }
+            this.sbpanelAppStatus.Text = updatedText.Trim();
+        }
 
+        public void EnableActions(bool enable)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action<bool>(EnableActions), new object[] { enable });
+                return;
+            }
+            btnSettings.Enabled = enable;
+            btnImport.Enabled = enable;
+            btnUpdate.Enabled = enable;
+            btnExit.Enabled = enable;
+        }
+
+        public void ShowMessage(string message)
+        {
+            MessageBox.Show(message);
         }
 
         /// <summary>
@@ -88,27 +109,9 @@ namespace itdevgeek_charites
             notifyIcon.Visible = false;
         }
 
-        /// <summary>
-        /// Update button action, perform google calendar sync
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event arguments</param>
         private void BtnUpdate_Click(object sender, EventArgs e)
         {
-            if (Charites.HaveRequiredData())
-            {
-                // disable buttons while performing update
-                btnSettings.Enabled = false;
-                btnImport.Enabled = false;
-                btnUpdate.Enabled = false;
-                btnExit.Enabled = false;
-
-                this.backgroundSynchWorker.RunWorkerAsync();
-            }
-            else
-            {
-                MessageBox.Show("Please update program settings to enter an Account and select a Calendar to Update.");
-            }
+            UpdateRequested?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -118,7 +121,7 @@ namespace itdevgeek_charites
         /// <param name="e">event arguments</param>
         private void BtnExit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            ExitRequested?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -128,15 +131,7 @@ namespace itdevgeek_charites
         /// <param name="e">event arguments</param>
         private void BtnSettings_Click(object sender, EventArgs e)
         {
-            if (settingsScreen == null || settingsScreen.IsDisposed)
-            {
-                settingsScreen = new ConfigurationScreen();
-            }
-
-            settingsScreen.TopMost = true;
-            settingsScreen.StartPosition = FormStartPosition.CenterScreen;
-            settingsScreen.Show();
-            settingsScreen.Refresh();
+            SettingsRequested?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -146,38 +141,7 @@ namespace itdevgeek_charites
         /// <param name="e">event arguments</param>
         private void btnImport_Click(object sender, EventArgs e)
         {
-            if (importScreen == null || importScreen.IsDisposed)
-            {
-                importScreen = new ImportScreen();
-            }
-
-            importScreen.TopMost = true;
-            importScreen.StartPosition = FormStartPosition.CenterScreen;
-            importScreen.Show();
-            importScreen.Refresh();
-        }
-
-        /// <summary>
-        /// Background worker, work completed, re-enable screen buttons
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event arguments</param>
-        void BgSynchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            btnSettings.Enabled = true;
-            btnImport.Enabled = true;
-            btnUpdate.Enabled = true;
-            btnExit.Enabled = true;
-        }
-
-        /// <summary>
-        /// Background update worker, update the google calendar
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event arguments</param>
-        void BgSynchWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            Charites.UpdateGoogleCalendar();
+            ImportRequested?.Invoke(this, EventArgs.Empty);
         }
 
     }

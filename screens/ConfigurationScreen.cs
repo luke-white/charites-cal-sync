@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------
+// -----------------------------------------------------
 // <copyright file="ConfigurationScreen.cs" company="IT Dev Geek">
 //     IT Dev Geek. All rights reserved.
 // </copyright>
@@ -248,7 +248,7 @@ namespace itdevgeek_charites.screens
                 DialogResult answer = MessageBox.Show("Are you sure you wish to clear all events from the Calendar?", "caption", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
                 if (answer == DialogResult.Yes)
                 {
-                    GCalHelper.ClearAllEventsFromCalendar(txtCalendarOwner.Text.Trim(), (cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString(), null);
+                    GCalHelper.ClearAllEventsFromCalendarAsync(txtCalendarOwner.Text.Trim(), (cbCalendarToUpdate.SelectedItem as CalendarListItem).Value.ToString(), null).Wait();
                     GCalHelper.googleCalEvents = null;
                 }
             }
