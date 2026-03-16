@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------
+// -----------------------------------------------------
 // <copyright file="GCalHelper.cs" company="IT Dev Geek">
 //     IT Dev Geek. All rights reserved.
 // </copyright>
@@ -101,7 +101,7 @@ namespace itdevgeek_charites
         /// <param name="calendarId">Calendar ID</param>
         /// <param name="updateYear">Year to get events for</param>
         /// <param name="pageToken">Whether there are more pages of events</param>
-        public static void GetYearlyEvents(string owner, string calendarId, DateTime updateYear, string pageToken)
+        public static async Task GetYearlyEventsAsync(string owner, string calendarId, DateTime updateYear, string pageToken)
         {
             if (string.IsNullOrEmpty(pageToken))
             {
@@ -128,7 +128,7 @@ namespace itdevgeek_charites
             }
 
             // List events.
-            Events events = request.Execute();
+            Events events = await request.ExecuteAsync();
             if (events.Items != null && events.Items.Count > 0)
             {
                 if (googleCalEvents == null)
@@ -207,8 +207,8 @@ namespace itdevgeek_charites
             // Response has more pages of events, get the next page for processing
             if (!string.IsNullOrEmpty(events.NextPageToken))
             {
-                Thread.Sleep(50000);
-                GetYearlyEvents(owner, calendarId, updateYear, events.NextPageToken);
+                await Task.Delay(50000);
+                await GetYearlyEventsAsync(owner, calendarId, updateYear, events.NextPageToken);
             }
 
             log.Info("Finished Retrieval of Events from " + owner + "'s Google Calendar (" + calendarId + ") for " + updateYear.Year);
@@ -220,7 +220,7 @@ namespace itdevgeek_charites
         /// <param name="owner">Calendar owner</param>
         /// <param name="calendarId">Calendar ID</param>
         /// <param name="pageToken">Whether there are more pages of events to clear</param>
-        public static async void ClearAllEventsFromCalendar(string owner, string calendarId, string pageToken)
+        public static async Task ClearAllEventsFromCalendarAsync(string owner, string calendarId, string pageToken)
         {
             EventsResource.ListRequest request = GetCalendarService(owner).Events.List(calendarId);
 
@@ -234,7 +234,7 @@ namespace itdevgeek_charites
             }
 
             // List events.
-            Events events = request.Execute();
+            Events events = await request.ExecuteAsync();
             if (events.Items != null && events.Items.Count > 0)
             {
                 await DeleteGoogleEventsAsync(owner, calendarId, events);
@@ -243,8 +243,8 @@ namespace itdevgeek_charites
             // If there are more pages of events continue removing next page
             if (!string.IsNullOrEmpty(events.NextPageToken))
             {
-                Thread.Sleep(50000);
-                ClearAllEventsFromCalendar(owner, calendarId, events.NextPageToken);
+                await Task.Delay(50000);
+                await ClearAllEventsFromCalendarAsync(owner, calendarId, events.NextPageToken);
             }
         }
 
@@ -256,7 +256,7 @@ namespace itdevgeek_charites
         /// <param name="newEvents">new events to add</param>
         /// <param name="updatedEvents">events to update</param>
         /// <param name="deletedEvents">events to remove</param>
-        public static async void UpdateGoogleCalendar(string owner, string calendarId, List<GCalEventItem> newEvents, List<GCalEventItem> updatedEvents, List<GCalEventItem> deletedEvents)
+        public static async Task UpdateGoogleCalendarAsync(string owner, string calendarId, List<GCalEventItem> newEvents, List<GCalEventItem> updatedEvents, List<GCalEventItem> deletedEvents)
         {
             log.Info("Starting Update Requests for Google Calendar");
 
@@ -346,7 +346,7 @@ namespace itdevgeek_charites
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
 
-                        Thread.Sleep(50000);
+                        await Task.Delay(50000);
 
                         eventCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));
@@ -431,7 +431,7 @@ namespace itdevgeek_charites
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
 
-                        Thread.Sleep(50000);
+                        await Task.Delay(50000);
 
                         batchCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));
@@ -500,7 +500,7 @@ namespace itdevgeek_charites
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
 
-                        Thread.Sleep(50000);
+                        await Task.Delay(50000);
 
                         batchCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));
@@ -554,7 +554,7 @@ namespace itdevgeek_charites
                         // Execute the batch request and create a new batch as cannot send more than 1000
                         await request.ExecuteAsync();
 
-                        Thread.Sleep(50000);
+                        await Task.Delay(50000);
 
                         batchCount = 1;
                         request = new BatchRequest(GetCalendarService(owner));

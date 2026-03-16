@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------
+// -----------------------------------------------------
 // <copyright file="Charites.cs" company="IT Dev Geek">
 //     IT Dev Geek. All rights reserved.
 // </copyright>
@@ -11,6 +11,7 @@ namespace itdevgeek_charites
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using Chroniton;
     using Chroniton.Jobs;
@@ -223,7 +224,7 @@ namespace itdevgeek_charites
         /// <summary>
         /// Perform the update of the Google Calendar
         /// </summary>
-        public static void UpdateGoogleCalendar()
+        public static async Task UpdateGoogleCalendarAsync()
         {
             if (HaveRequiredData())
             {
@@ -239,7 +240,7 @@ namespace itdevgeek_charites
                 // Get Google Calendar Events
                 if (GCalHelper.googleCalEvents == null)
                 {
-                    GCalHelper.GetYearlyEvents(_calendarOwner, _calendarId, _calendarYear, null);
+                    await GCalHelper.GetYearlyEventsAsync(_calendarOwner, _calendarId, _calendarYear, null);
                 }
 
                 List<GCalEventItem> currentGoogEvents = GCalHelper.googleCalEvents;
@@ -319,7 +320,7 @@ namespace itdevgeek_charites
                         updatedEvents = new List<GCalEventItem>();
                     }
 
-                    GCalHelper.UpdateGoogleCalendar(_calendarOwner, _calendarId, newEvents, updatedEvents, deletedEvents);
+                    await GCalHelper.UpdateGoogleCalendarAsync(_calendarOwner, _calendarId, newEvents, updatedEvents, deletedEvents);
 
                     log.Info("Finished the update Process...");
                     UpdateProgramStatus("Calendar update completed - " + DateTime.Now.ToString("dd/MM/yyyy h:mm tt"));
@@ -413,7 +414,7 @@ namespace itdevgeek_charites
                 var schedule = new EveryXTimeSchedule(TimeSpan.FromMinutes(_runInMinutes));
                 if (backgroundUpdateJob == null)
                 {
-                    backgroundUpdateJob = new SimpleJob(scheduledTime => UpdateGoogleCalendar());
+                    backgroundUpdateJob = new SimpleJob(scheduledTime => UpdateGoogleCalendarAsync().Wait());
                 }
                 scheduledUpdateJob = backgroundUpdateScheduler.ScheduleJob(schedule, backgroundUpdateJob, false);
             }

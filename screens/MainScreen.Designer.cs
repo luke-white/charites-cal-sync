@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------
+// -----------------------------------------------------
 // <copyright file="MainScreen.Designer.cs" company="IT Dev Geek">
 //     IT Dev Geek. All rights reserved.
 // </copyright>
@@ -40,14 +40,12 @@ namespace itdevgeek_charites
             this.btnExit = new FontAwesome.Sharp.IconButton();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.statusBar = new System.Windows.Forms.StatusBar();
-            this.sbpanelAppStatus = new System.Windows.Forms.StatusBarPanel();
-            this.sbpanelDateTime = new System.Windows.Forms.StatusBarPanel();
+            this.statusBar = new System.Windows.Forms.StatusStrip();
+            this.sbpanelAppStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.sbpanelDateTime = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnSettings = new FontAwesome.Sharp.IconButton();
             this.rtxtAppInfo = new System.Windows.Forms.RichTextBox();
             this.btnImport = new FontAwesome.Sharp.IconButton();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpanelAppStatus)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpanelDateTime)).BeginInit();
             this.SuspendLayout();
             // 
             // btnExit
@@ -90,26 +88,23 @@ namespace itdevgeek_charites
             // 
             this.statusBar.Location = new System.Drawing.Point(0, 339);
             this.statusBar.Name = "statusBar";
-            this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
+            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sbpanelAppStatus,
             this.sbpanelDateTime});
-            this.statusBar.ShowPanels = true;
             this.statusBar.Size = new System.Drawing.Size(584, 22);
             this.statusBar.TabIndex = 10;
             // 
             // sbpanelAppStatus
             // 
-            this.sbpanelAppStatus.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
+            this.sbpanelAppStatus.Spring = true;
             this.sbpanelAppStatus.Name = "sbpanelAppStatus";
             this.sbpanelAppStatus.ToolTipText = "Last Activity";
-            this.sbpanelAppStatus.Width = 557;
+            this.sbpanelAppStatus.Size = new System.Drawing.Size(557, 17);
             // 
             // sbpanelDateTime
             // 
-            this.sbpanelDateTime.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
-            this.sbpanelDateTime.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.Raised;
             this.sbpanelDateTime.Name = "sbpanelDateTime";
-            this.sbpanelDateTime.Width = 10;
+            this.sbpanelDateTime.Size = new System.Drawing.Size(12, 17);
             // 
             // btnSettings
             // 
@@ -172,20 +167,19 @@ namespace itdevgeek_charites
             this.Name = "MainScreen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Charites:  Salon Iris Calendar Integration";
-            ((System.ComponentModel.ISupportInitialize)(this.sbpanelAppStatus)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpanelDateTime)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.Button btnUpdate;
-        private System.Windows.Forms.StatusBar statusBar;
+        private System.Windows.Forms.StatusStrip statusBar;
         private FontAwesome.Sharp.IconButton btnSettings;
         private FontAwesome.Sharp.IconButton btnExit;
         private System.Windows.Forms.RichTextBox rtxtAppInfo;
-        protected System.Windows.Forms.StatusBarPanel sbpanelAppStatus;
-        protected System.Windows.Forms.StatusBarPanel sbpanelDateTime;
+        protected System.Windows.Forms.ToolStripStatusLabel sbpanelAppStatus;
+        protected System.Windows.Forms.ToolStripStatusLabel sbpanelDateTime;
         public System.Windows.Forms.NotifyIcon notifyIcon;
         private FontAwesome.Sharp.IconButton btnImport;
     }
